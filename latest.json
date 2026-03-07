@@ -1,11 +1,11 @@
 {
-  "version": "1.0.15",
-  "notes": "Feed ad label display, Shorts fix, update error reporting",
+  "version": "1.0.16",
+  "notes": "Sponsor ad detection, menu/dropdown fix, JS error fixes",
   "pub_date": "2026-03-09T00:00:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUldTZUFreStEbzlDSnIzTU1kWFZEQk1JYjcrK3hzUGthWTRRNU5UQlBjMVJaYzluT0N0ZVpBM0t1Q1kzRUVNTk5kcU1Ea2tiVlRvZjZkRE5abC9HbVIyTkZkQU1ia3BzWGdzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzcyOTE1Mjg2CWZpbGU6U3VtUGxheWVyXzEuMC4xNV94NjQtc2V0dXAuZXhlCi9zbmFlU2JDdDVsMXh6UFBqRzNWVzdNdHhGL0hUOTZya2JYUi9ud3BmamJiQXRiMTZ6ajYrNVVscml2QXIvRUp3c2dmUGwvY1RvZHdzdXRkTExiNUJnPT0K",
-      "url": "https://github.com/magi815/SumPlayer-Tauri/releases/download/v1.0.15/SumPlayer_1.0.15_x64-setup.exe"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUldTZUFreStEbzlDSnVNcnFMOXRlRVpFRFRhdDkzbnBDS0MxMlVBdDVKWllwVUpwYklsWmFQY3pUaHJ6cDdTTTY4T2lqY1RHM0VxMFk3RjZOam5RSUVQUEdEaElNYWtkYkE0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzcyOTE2MzEwCWZpbGU6U3VtUGxheWVyXzEuMC4xNl94NjQtc2V0dXAuZXhlCis3VkUySTBhVDlUM1FHY0QreVY2dW1ZRzMydUZaeXdnNnBLUExid0tQblloN1YzOUdPRDlpbUNNMTM1b1YySFlKOG5mVnEzMW5lUEtZcUo3QW4yNUFnPT0K",
+      "url": "https://github.com/magi815/SumPlayer-Tauri/releases/download/v1.0.16/SumPlayer_1.0.16_x64-setup.exe"
     }
   }
 }

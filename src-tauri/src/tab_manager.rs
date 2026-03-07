@@ -116,10 +116,12 @@ impl TabManager {
                 'use strict';
                 if(window.__sp_adbypass) return;
                 window.__sp_adbypass = true;
+                try{if(window!==window.top) return;}catch(e){return;}
 
                 function isShortsPage(){ return location.pathname.startsWith('/shorts/'); }
 
                 var FEED_AD_SEL='ytd-ad-slot-renderer,ytd-in-feed-ad-layout-renderer,ytd-promoted-sparkles-web-renderer,ytd-promoted-video-renderer,ytd-display-ad-renderer';
+                var SPONSOR_TEXTS=['스폰서','Sponsored','Sponsorisé','Gesponsert','Sponsorizzato','Patrocinado'];
                 function markAdContainer(c){
                     if(c.__sp_ad_marked) return;
                     c.__sp_ad_marked=true;
@@ -129,6 +131,24 @@ impl TabManager {
                     l.textContent='ad';
                     l.style.cssText='color:#666;font-size:16px;font-weight:700;font-family:-apple-system,sans-serif;letter-spacing:2px;text-transform:uppercase;';
                     c.appendChild(l);
+                }
+                function isSponsorAd(el){
+                    if(el.__sp_ad_marked) return false;
+                    var badges=el.querySelectorAll('ytd-badge-supported-renderer,span.ytd-badge-supported-renderer,[class*="badge"],.badge');
+                    for(var i=0;i<badges.length;i++){
+                        var txt=(badges[i].textContent||'').trim();
+                        for(var j=0;j<SPONSOR_TEXTS.length;j++){if(txt===SPONSOR_TEXTS[j]) return true;}
+                    }
+                    var meta=el.querySelectorAll('#byline-container,#metadata-line,.ytd-video-meta-block,#channel-name');
+                    for(var i=0;i<meta.length;i++){
+                        var txt=(meta[i].textContent||'');
+                        for(var j=0;j<SPONSOR_TEXTS.length;j++){if(txt.indexOf(SPONSOR_TEXTS[j])!==-1) return true;}
+                    }
+                    return false;
+                }
+                function scanSponsorAds(root){
+                    var items=(root||document).querySelectorAll('ytd-rich-item-renderer');
+                    for(var i=0;i<items.length;i++){if(isSponsorAd(items[i])) markAdContainer(items[i]);}
                 }
 
                 var AD_FIELDS = ['adPlacements','playerAds','adSlots','adBreakHeartbeatParams','adBreakParams'];
@@ -271,8 +291,10 @@ impl TabManager {
 
                 // Layer 5: CSS hiding
                 var style=document.createElement('style');
-                style.textContent='.ytp-ad-module,.ytp-ad-overlay-container,.ytp-ad-message-container,.ytp-ad-preview-container,.ytp-ad-skip-button-container,.ytp-ad-text,.ytp-ad-image-overlay,.video-ads,#player-ads,ytd-action-companion-ad-renderer,ytd-banner-promo-renderer,ytd-statement-banner-renderer,ytd-primetime-promo-renderer,ytd-mealbar-promo-renderer,#masthead-ad,ytd-enforcement-message-view-model,tp-yt-iron-overlay-backdrop.opened{display:none!important}';
-                (document.head||document.documentElement).appendChild(style);
+                style.textContent='.ytp-ad-module,.ytp-ad-overlay-container,.ytp-ad-message-container,.ytp-ad-preview-container,.ytp-ad-skip-button-container,.ytp-ad-text,.ytp-ad-image-overlay,.video-ads,#player-ads,ytd-action-companion-ad-renderer,ytd-banner-promo-renderer,ytd-statement-banner-renderer,ytd-primetime-promo-renderer,ytd-mealbar-promo-renderer,#masthead-ad,ytd-enforcement-message-view-model{display:none!important}';
+                var target=document.head||document.documentElement;
+                if(target){target.appendChild(style);}
+                else{document.addEventListener('DOMContentLoaded',function(){(document.head||document.documentElement).appendChild(style);});}
 
                 // Layer 6: MutationObserver for enforcement popups
                 var obs=new MutationObserver(function(mutations){
@@ -282,12 +304,12 @@ impl TabManager {
                             if(!(node instanceof HTMLElement)) continue;
                             var adSlot=node.matches&&node.matches(FEED_AD_SEL)?node:(node.querySelector&&node.querySelector(FEED_AD_SEL));
                             if(adSlot){var container=adSlot.closest('ytd-rich-item-renderer,ytd-video-renderer,ytd-compact-video-renderer')||adSlot;markAdContainer(container);}
-                            var enforcement=node.matches&&node.matches('ytd-enforcement-message-view-model,tp-yt-paper-dialog')?node:(node.querySelector&&node.querySelector('ytd-enforcement-message-view-model'));
+                            if(node.matches&&node.matches('ytd-rich-item-renderer')){if(isSponsorAd(node)) markAdContainer(node);}
+                            else if(node.querySelector){var sItems=node.querySelectorAll('ytd-rich-item-renderer');for(var si=0;si<sItems.length;si++){if(isSponsorAd(sItems[si])) markAdContainer(sItems[si]);}}
+                            var enforcement=node.matches&&node.matches('ytd-enforcement-message-view-model')?node:(node.querySelector&&node.querySelector('ytd-enforcement-message-view-model'));
                             if(enforcement){
                                 var dialog=enforcement.closest&&enforcement.closest('tp-yt-paper-dialog')||enforcement;
                                 dialog.style.display='none';dialog.removeAttribute('opened');
-                                var backdrop=document.querySelector('tp-yt-iron-overlay-backdrop');
-                                if(backdrop){backdrop.style.display='none';backdrop.classList.remove('opened');}
                                 setTimeout(function(){try{dialog.remove();}catch(e){}},0);
                             }
                             var mealbar=node.matches&&node.matches('ytd-mealbar-promo-renderer')?node:(node.querySelector&&node.querySelector('ytd-mealbar-promo-renderer'));
@@ -304,8 +326,10 @@ impl TabManager {
                             var c=slots[i].closest('ytd-rich-item-renderer,ytd-video-renderer,ytd-compact-video-renderer')||slots[i];
                             markAdContainer(c);
                         }
+                        scanSponsorAds();
                     });
                 });
+                setInterval(scanSponsorAds,3000);
             })()"#;
 
             let builder = tauri::webview::WebviewBuilder::new(
