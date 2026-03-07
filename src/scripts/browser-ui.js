@@ -639,7 +639,7 @@ const menuItems = [
   { label: '스크린샷', action: 'menu-screenshot', icon: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1.5"/><circle cx="8" cy="8.5" r="2.5"/><path d="M5.5 3L6.5 1.5h3L10.5 3"/></svg>' },
   { label: '개발자 도구', action: 'menu-devtools', icon: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4L1.5 8 5 12M11 4l3.5 4L11 12M9.5 2l-3 12"/></svg>' },
   { type: 'divider' },
-  { type: 'version', label: 'SumPlayer v1.0.8' },
+  { type: 'version', label: 'SumPlayer v1.0.9' },
 ];
 
 function openMenu() {
@@ -933,28 +933,11 @@ function registerEventHandlers() {
     }
   });
 
-  // Auto-update: show confirm dialog when new version is available
+  // Auto-update: show native confirm dialog when new version is available
   onEvent('update-available', (data) => {
-    var existing = document.getElementById('update-dialog');
-    if (existing) return;
-    var overlay = document.createElement('div');
-    overlay.id = 'update-dialog';
-    overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:999999;display:flex;align-items:flex-start;justify-content:center;padding-top:80px;';
-    var box = document.createElement('div');
-    box.style.cssText = 'background:#2c2d32;border:1px solid rgba(255,255,255,0.1);border-radius:12px;padding:24px;width:360px;box-shadow:0 8px 32px rgba(0,0,0,0.4);color:#e4e5e9;font-size:14px;';
-    box.innerHTML = '<div style="font-size:16px;font-weight:600;margin-bottom:12px;">새로운 버전 발견 (v' + data.version + ')</div>'
-      + '<div style="color:#8b8d93;margin-bottom:20px;">프로그램을 종료하고 업데이트 후 재시작합니다.</div>'
-      + '<div style="display:flex;justify-content:flex-end;gap:8px;">'
-      + '<button id="update-cancel" style="height:34px;padding:0 16px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#e4e5e9;font-size:13px;cursor:pointer;">나중에</button>'
-      + '<button id="update-ok" style="height:34px;padding:0 16px;border-radius:8px;border:none;background:#7c5cfc;color:#fff;font-size:13px;cursor:pointer;">확인</button>'
-      + '</div>';
-    overlay.appendChild(box);
-    document.body.appendChild(overlay);
-    document.getElementById('update-cancel').addEventListener('click', function() { overlay.remove(); });
-    document.getElementById('update-ok').addEventListener('click', function() {
-      box.innerHTML = '<div style="text-align:center;padding:10px;color:#8b8d93;">업데이트 설치 중...</div>';
-      invoke('update_confirm').catch(function() { overlay.remove(); });
-    });
+    if (confirm('새로운 버전 발견 (v' + data.version + ')\n프로그램을 종료하고 업데이트 후 재시작합니다.\n\n확인을 누르면 업데이트가 시작됩니다.')) {
+      invoke('update_confirm');
+    }
   });
 
   onEvent('control-server-status', (data) => {

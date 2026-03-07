@@ -1,11 +1,11 @@
 {
-  "version": "1.0.8",
-  "notes": "Block sponsor image overlay ads on video player",
-  "pub_date": "2026-03-08T18:00:00Z",
+  "version": "1.0.9",
+  "notes": "Use native confirm dialog for update notification",
+  "pub_date": "2026-03-08T19:00:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZUFreStEbzlDSm5DblVxS3lWL1pSWmdMS1JmTU1yTlpqSjlHYlgyK0NkRTYwcG5KVkc0bC9kU3M0NStBWVVLMWsvWjlDbXU1Z3FFL0hrTXJTMG9XekIxOTl6L2N1bmdFPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzcyOTExNDI2CWZpbGU6U3VtUGxheWVyXzEuMC44X3g2NC1zZXR1cC5leGUKYkRWUUUyaTlNNW9mdjh3UFR1K3JyZ0draWlweG0vUEhEZFpiNzlZZGl6ekQzRGlqZVN4VmZpNDBNdjArRHVhWGlLdnFmak8xbDFnR0ZaaVZ4NHpxRGc9PQo=",
-      "url": "https://github.com/magi815/SumPlayer-Tauri/releases/download/v1.0.8/SumPlayer_1.0.8_x64-setup.exe"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUldTZUFreStEbzlDSm0wd01rdGp2QlNNcDJoMlFYRFYzekhIZGZCSkFLN2hLVm92eTRKdTg2NTFnakk5OWVmVSs4TzBFM0NodXd2aUNnQ1lhUU1xMGVvcjNNZEloQ3V4MndFPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzcyOTExODc0CWZpbGU6U3VtUGxheWVyXzEuMC45X3g2NC1zZXR1cC5leGUKZ2xyMXNBdHNyREN6d1Y1cFdZR0xNRUZCSWtTeTdMOVZHMGtCRThoNzVTQzJONlVadDFkNmxHZ1FjSldvS3hmQkt4WHVia294VDhia0wvTnIvYnp4RGc9PQo=",
+      "url": "https://github.com/magi815/SumPlayer-Tauri/releases/download/v1.0.9/SumPlayer_1.0.9_x64-setup.exe"
     }
   }
 }
