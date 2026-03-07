@@ -316,7 +316,7 @@ impl TabManager {
                                 if(document.getElementById('__sp_adblock_style')) return;
                                 var s = document.createElement('style');
                                 s.id = '__sp_adblock_style';
-                                s.textContent = '.ytp-ad-overlay-container,.ytp-ad-text-overlay,#player-ads,tp-yt-paper-dialog.ytd-popup-container,#masthead-ad{display:none!important}ytd-ad-slot-renderer,ytd-promoted-sparkles-web-renderer,ytd-display-ad-renderer,ytd-in-feed-ad-layout-renderer,.ytd-banner-promo-renderer,ytd-statement-banner-renderer,ytd-promoted-video-renderer,.ytd-mealbar-promo-renderer,ytd-primetime-promo-renderer{visibility:hidden!important;height:48px!important;min-height:0!important;max-height:48px!important;overflow:hidden!important;display:flex!important;align-items:center!important;justify-content:center!important;position:relative!important}ytd-ad-slot-renderer::after,ytd-promoted-sparkles-web-renderer::after,ytd-display-ad-renderer::after,ytd-in-feed-ad-layout-renderer::after,.ytd-banner-promo-renderer::after,ytd-statement-banner-renderer::after,ytd-promoted-video-renderer::after,.ytd-mealbar-promo-renderer::after,ytd-primetime-promo-renderer::after{content:\"AD\";visibility:visible!important;color:rgba(255,255,255,0.25);font-size:11px;font-weight:600;font-family:-apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:1px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}';
+                                s.textContent = '.ytp-ad-overlay-container,.ytp-ad-text-overlay,#player-ads,tp-yt-paper-dialog.ytd-popup-container,#masthead-ad,.ytp-ad-image-overlay,.ytp-ad-overlay-image,.ytp-ad-overlay-slot,a.ytp-ad-overlay-close-button{display:none!important}.ytp-ad-player-overlay,.ytp-ad-player-overlay-layout,.ytp-ad-player-overlay-flyout-cta,.ytp-ad-action-interstitial,.ytp-ad-image-overlay-container{display:none!important}ytd-ad-slot-renderer,ytd-promoted-sparkles-web-renderer,ytd-display-ad-renderer,ytd-in-feed-ad-layout-renderer,.ytd-banner-promo-renderer,ytd-statement-banner-renderer,ytd-promoted-video-renderer,.ytd-mealbar-promo-renderer,ytd-primetime-promo-renderer{visibility:hidden!important;height:48px!important;min-height:0!important;max-height:48px!important;overflow:hidden!important;display:flex!important;align-items:center!important;justify-content:center!important;position:relative!important}ytd-ad-slot-renderer::after,ytd-promoted-sparkles-web-renderer::after,ytd-display-ad-renderer::after,ytd-in-feed-ad-layout-renderer::after,.ytd-banner-promo-renderer::after,ytd-statement-banner-renderer::after,ytd-promoted-video-renderer::after,.ytd-mealbar-promo-renderer::after,ytd-primetime-promo-renderer::after{content:\"AD\";visibility:visible!important;color:rgba(255,255,255,0.25);font-size:11px;font-weight:600;font-family:-apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:1px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}';
                                 (document.head||document.documentElement).appendChild(s);
                             }
 
@@ -326,6 +326,21 @@ impl TabManager {
                                 // Sponsor/promo interstitial: click skip button
                                 var sponsorSkip = document.querySelector('.ytp-ad-skip-button-slot button,button.ytp-ad-skip-button,button.ytp-ad-skip-button-modern,.ytp-skip-ad-button,[class*="skip-button"]');
                                 if(sponsorSkip && sponsorSkip.offsetParent !== null){ sponsorSkip.click(); return; }
+                                // Sponsor image overlay: hide elements containing 스폰서/Sponsored text
+                                var adOverlays = document.querySelectorAll('.ytp-ad-player-overlay,.ytp-ad-player-overlay-layout,.ytp-ad-action-interstitial,[class*="ad-player-overlay"],[class*="ad-interstitial"]');
+                                for(var k=0;k<adOverlays.length;k++){
+                                    if(adOverlays[k].offsetParent !== null){ adOverlays[k].style.display='none'; }
+                                }
+                                // Find and hide sponsor overlays by text content
+                                var spans = document.querySelectorAll('.ytp-ad-player-overlay span,.ytp-ad-player-overlay-layout span,.ytp-ad-action-interstitial span,#movie_player span');
+                                for(var j=0;j<spans.length;j++){
+                                    var stxt = spans[j].textContent.trim();
+                                    if(stxt==='스폰서'||stxt==='Sponsored'||stxt==='스폰서 광고'){
+                                        var overlay = spans[j].closest('.ytp-ad-player-overlay,.ytp-ad-player-overlay-layout,.ytp-ad-action-interstitial,[class*="ad-player-overlay"],[class*="ad-interstitial"]');
+                                        if(overlay){ overlay.style.display='none'; }
+                                        else { var p=spans[j].parentElement;while(p&&p.id!=='movie_player'){if(p.className&&typeof p.className==='string'&&(p.className.indexOf('ad-')!==-1||p.className.indexOf('Ad')!==-1)){p.style.display='none';break;}p=p.parentElement;} }
+                                    }
+                                }
                                 // Sponsor overlay with "건너뛰기" text
                                 var allBtns = document.querySelectorAll('button');
                                 for(var i=0;i<allBtns.length;i++){
