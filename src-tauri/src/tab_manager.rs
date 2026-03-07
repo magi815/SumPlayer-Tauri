@@ -307,50 +307,77 @@ impl TabManager {
                         })()"#;
                         let _ = webview.eval(shorts_js);
 
-                        // YouTube ad blocker injection
+                        // YouTube ad blocker injection (approach 1+2+3 combined)
                         let adblock_js = r#"(function(){
                             if(window.__sp_adblock_injected) return;
                             window.__sp_adblock_injected = true;
 
+                            // === Approach 3: CSS hiding for DOM ad elements ===
                             function ensureAdStyle(){
                                 if(document.getElementById('__sp_adblock_style')) return;
                                 var s = document.createElement('style');
                                 s.id = '__sp_adblock_style';
-                                s.textContent = '.ytp-ad-overlay-container,.ytp-ad-text-overlay,#player-ads,tp-yt-paper-dialog.ytd-popup-container,#masthead-ad{display:none!important}ytd-ad-slot-renderer,ytd-promoted-sparkles-web-renderer,ytd-display-ad-renderer,ytd-in-feed-ad-layout-renderer,.ytd-banner-promo-renderer,ytd-statement-banner-renderer,ytd-promoted-video-renderer,.ytd-mealbar-promo-renderer,ytd-primetime-promo-renderer{visibility:hidden!important;height:48px!important;min-height:0!important;max-height:48px!important;overflow:hidden!important;display:flex!important;align-items:center!important;justify-content:center!important;position:relative!important}ytd-ad-slot-renderer::after,ytd-promoted-sparkles-web-renderer::after,ytd-display-ad-renderer::after,ytd-in-feed-ad-layout-renderer::after,.ytd-banner-promo-renderer::after,ytd-statement-banner-renderer::after,ytd-promoted-video-renderer::after,.ytd-mealbar-promo-renderer::after,ytd-primetime-promo-renderer::after{content:\"AD\";visibility:visible!important;color:rgba(255,255,255,0.25);font-size:11px;font-weight:600;font-family:-apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:1px;position:absolute;top:50%;left:50%;transform:translate(-50%,-50%)}';
+                                s.textContent = '#masthead-ad,#player-ads,.video-ads,.ytp-ad-overlay-container,.ytp-ad-text-overlay,.ytp-ad-image-overlay,.ytp-ad-overlay-image,tp-yt-paper-dialog.ytd-popup-container,#offer-module,.ytp-featured-product,ytd-merch-shelf-renderer,ytd-popup-container:has(a[href="/premium"]){display:none!important}ytd-ad-slot-renderer,ytd-promoted-sparkles-web-renderer,ytd-display-ad-renderer,ytd-in-feed-ad-layout-renderer,.ytd-banner-promo-renderer,ytd-statement-banner-renderer,ytd-promoted-video-renderer,.ytd-mealbar-promo-renderer,ytd-primetime-promo-renderer{display:none!important}';
                                 (document.head||document.documentElement).appendChild(s);
                             }
 
+                            // === Approach 3: Network interception (block ad requests) ===
+                            var adPatterns = ['doubleclick.net','googlesyndication.com','youtube.com/api/stats/ads','youtube.com/pagead','youtube.com/get_midroll'];
+                            if(!window.__sp_fetch_hooked){
+                                window.__sp_fetch_hooked = true;
+                                var origFetch = window.fetch;
+                                window.fetch = function(url){
+                                    var u = (typeof url === 'string') ? url : (url && url.url ? url.url : '');
+                                    for(var i=0;i<adPatterns.length;i++){
+                                        if(u.indexOf(adPatterns[i])!==-1) return new Promise(function(){});
+                                    }
+                                    return origFetch.apply(this, arguments);
+                                };
+                                var origXHR = XMLHttpRequest.prototype.open;
+                                XMLHttpRequest.prototype.open = function(method, url){
+                                    var u = url || '';
+                                    for(var i=0;i<adPatterns.length;i++){
+                                        if(u.indexOf(adPatterns[i])!==-1){ this.__sp_blocked = true; break; }
+                                    }
+                                    return origXHR.apply(this, arguments);
+                                };
+                                var origSend = XMLHttpRequest.prototype.send;
+                                XMLHttpRequest.prototype.send = function(){
+                                    if(this.__sp_blocked){ this.abort(); return; }
+                                    return origSend.apply(this, arguments);
+                                };
+                            }
+
+                            // === Approach 1+2: Ad detection + skip/reload ===
                             var wasMuted = false;
+                            var lastVideoId = '';
                             setInterval(function(){
                                 ensureAdStyle();
-                                // 1. Click skip buttons (video ads + sponsor interstitials)
-                                var sponsorSkip = document.querySelector('.ytp-ad-skip-button-slot button,button.ytp-ad-skip-button,button.ytp-ad-skip-button-modern,.ytp-skip-ad-button,[class*="skip-button"]');
-                                if(sponsorSkip && sponsorSkip.offsetParent !== null){ sponsorSkip.click(); return; }
-                                // 2. Click any "건너뛰기"/"Skip" buttons in ad context
+
+                                // Step 1: Click skip buttons first (fastest path)
+                                var skipBtn = document.querySelector('.ytp-ad-skip-button-slot button,button.ytp-ad-skip-button,button.ytp-ad-skip-button-modern,.ytp-skip-ad-button,.ytp-ad-skip-button-container button,[class*="skip-button"]');
+                                if(skipBtn && skipBtn.offsetParent !== null){ skipBtn.click(); return; }
+                                // Also click 건너뛰기/Skip text buttons
                                 var allBtns = document.querySelectorAll('button');
                                 for(var i=0;i<allBtns.length;i++){
                                     var txt = allBtns[i].textContent.trim();
-                                    if((txt.indexOf('건너뛰기')!==-1 || txt.indexOf('Skip')!==-1) && allBtns[i].offsetParent !== null){
-                                        var parent = allBtns[i].closest('.ytp-ad-module,.ytp-ad-player-overlay,.ytp-ce-element,[class*="ad-"]');
-                                        if(parent || document.querySelector('.ad-showing,.ytp-ad-player-overlay-instream-info')){
-                                            allBtns[i].click(); return;
-                                        }
+                                    if((txt.indexOf('건너뛰기')!==-1||txt.indexOf('Skip')!==-1) && allBtns[i].offsetParent!==null){
+                                        var p = allBtns[i].closest('.ytp-ad-module,.ytp-ad-player-overlay,[class*="ad-"]');
+                                        if(p||document.querySelector('.ad-showing,.ad-interrupting')){ allBtns[i].click(); return; }
                                     }
                                 }
-                                // 3. Hide sponsor IMAGE overlays (non-video) — only if no skip button and has 스폰서 text
-                                var sponsorTexts = document.querySelectorAll('#movie_player span,#movie_player div');
-                                for(var j=0;j<sponsorTexts.length;j++){
-                                    var stxt = sponsorTexts[j].textContent.trim();
-                                    if(stxt==='스폰서'||stxt==='Sponsored'){
-                                        var container = sponsorTexts[j].closest('.ytp-ad-player-overlay,.ytp-ad-player-overlay-layout,.ytp-ad-action-interstitial,[class*="ad-player-overlay"]');
-                                        if(container && !container.querySelector('.ytp-ad-skip-button-slot,button.ytp-ad-skip-button,[class*="skip-button"]')){
-                                            container.style.display='none';
-                                        }
-                                        break;
+
+                                // Step 2: Detect ad playing (multiple signals)
+                                var player = document.getElementById('movie_player');
+                                var isAd = document.querySelector('.ad-showing,.ad-interrupting');
+                                if(!isAd && player){
+                                    var adIndicators = player.querySelectorAll('.ytp-ad-badge,.ytp-ad-player-overlay-instream-info,.ytp-ad-text,.ytp-ad-preview-container,.ytp-ad-action-interstitial,.ytp-ad-player-overlay');
+                                    for(var k=0;k<adIndicators.length;k++){
+                                        if(adIndicators[k].offsetParent!==null){ isAd = adIndicators[k]; break; }
                                     }
                                 }
-                                var adShowing = document.querySelector('.ad-showing');
-                                if(!adShowing) {
+
+                                if(!isAd){
                                     if(wasMuted){
                                         var v = document.querySelector('video');
                                         if(v){ v.muted = false; }
@@ -358,12 +385,45 @@ impl TabManager {
                                     }
                                     return;
                                 }
-                                var video = document.querySelector('.ad-showing video');
+
+                                // Step 3: Ad detected — try Approach 2 first (loadVideoWithPlayerVars)
+                                if(player && player.getVideoData && player.loadVideoWithPlayerVars){
+                                    try{
+                                        var data = player.getVideoData();
+                                        var vid = data.video_id;
+                                        if(vid && vid !== lastVideoId){
+                                            lastVideoId = vid;
+                                            var currentTime = player.getCurrentTime ? player.getCurrentTime() : 0;
+                                            // Mute immediately
+                                            var video = player.querySelector('video');
+                                            if(video){ video.muted = true; wasMuted = true; }
+                                            // Reload original video at saved position
+                                            player.loadVideoWithPlayerVars({videoId: vid, start: Math.floor(currentTime)});
+                                            return;
+                                        }
+                                    }catch(e){}
+                                }
+
+                                // Step 4: Fallback — mute + fast-forward to end
+                                var video = player ? player.querySelector('video') : document.querySelector('video');
                                 if(video){
                                     if(!wasMuted){ video.muted = true; wasMuted = true; }
                                     if(video.duration > 0){ video.currentTime = video.duration; }
                                 }
-                            }, 500);
+
+                                // Step 5: Hide sponsor image overlays (non-video)
+                                if(player){
+                                    var spans = player.querySelectorAll('span,div');
+                                    for(var j=0;j<spans.length;j++){
+                                        var stxt = spans[j].textContent.trim();
+                                        if(stxt==='스폰서'||stxt==='Sponsored'){
+                                            var c = spans[j].closest('.ytp-ad-player-overlay,.ytp-ad-player-overlay-layout,.ytp-ad-action-interstitial');
+                                            if(c && !c.querySelector('[class*="skip-button"]')){ c.style.display='none'; }
+                                            break;
+                                        }
+                                    }
+                                }
+                            }, 300);
                         })()"#;
                         let _ = webview.eval(adblock_js);
 

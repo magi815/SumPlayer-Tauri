@@ -1,6 +1,6 @@
 [package]
 name = "sumplayer-tauri"
-version = "1.0.10"
+version = "1.0.11"
 edition = "2021"
 
 [build-dependencies]
@@ -24,7 +24,7 @@ url = "2"
 base64 = "0.22"
 image = { version = "0.25", default-features = false, features = ["png"] }
 webview2-com = "0.38"
-windows = { version = "0.61", features = ["Win32_System_Com"] }
+windows = { version = "0.61", features = ["Win32_System_Com", "Win32_UI_WindowsAndMessaging"] }
 
 [features]
 default = ["custom-protocol"]

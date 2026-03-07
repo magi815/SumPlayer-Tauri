@@ -1038,7 +1038,7 @@ fn main() {
                 }
             }
 
-            // Auto-check for updates (only notify, don't auto-install)
+            // Auto-check for updates (native Win32 dialog)
             let update_handle = app.handle().clone();
             tauri::async_runtime::spawn(async move {
                 tokio::time::sleep(std::time::Duration::from_secs(5)).await;
@@ -1047,7 +1047,26 @@ fn main() {
                         match updater.check().await {
                             Ok(Some(update)) => {
                                 let version = update.version.clone();
-                                let _ = update_handle.emit("update-available", serde_json::json!({"version": &version}));
+                                // Show native Win32 MessageBox on a blocking thread
+                                let confirmed = tokio::task::spawn_blocking(move || {
+                                    use windows::core::*;
+                                    use windows::Win32::UI::WindowsAndMessaging::*;
+                                    let title = w!("SumPlayer 업데이트");
+                                    let msg_text = format!("새로운 버전 발견 (v{})\n\n프로그램을 종료하고 업데이트 후 재시작합니다.\n확인을 누르면 업데이트가 시작됩니다.", version);
+                                    let msg_wide: Vec<u16> = msg_text.encode_utf16().chain(std::iter::once(0)).collect();
+                                    let result = unsafe {
+                                        MessageBoxW(None, PCWSTR(msg_wide.as_ptr()), title, MB_OKCANCEL | MB_ICONINFORMATION | MB_TOPMOST)
+                                    };
+                                    result == MESSAGEBOX_RESULT(1) // IDOK = 1
+                                }).await.unwrap_or(false);
+                                if confirmed {
+                                    if let Ok(upd) = update_handle.updater() {
+                                        if let Ok(Some(update)) = upd.check().await {
+                                            let _ = update.download_and_install(|_, _| {}, || {}).await;
+                                            update_handle.restart();
+                                        }
+                                    }
+                                }
                             }
                             Ok(None) => {}
                             Err(_) => {}
