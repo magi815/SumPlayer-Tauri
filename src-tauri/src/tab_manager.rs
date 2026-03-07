@@ -323,6 +323,20 @@ impl TabManager {
                             var wasMuted = false;
                             setInterval(function(){
                                 ensureAdStyle();
+                                // Sponsor/promo interstitial: click skip button
+                                var sponsorSkip = document.querySelector('.ytp-ad-skip-button-slot button,button.ytp-ad-skip-button,button.ytp-ad-skip-button-modern,.ytp-skip-ad-button,[class*="skip-button"]');
+                                if(sponsorSkip && sponsorSkip.offsetParent !== null){ sponsorSkip.click(); return; }
+                                // Sponsor overlay with "건너뛰기" text
+                                var allBtns = document.querySelectorAll('button');
+                                for(var i=0;i<allBtns.length;i++){
+                                    var txt = allBtns[i].textContent.trim();
+                                    if((txt.indexOf('건너뛰기')!==-1 || txt.indexOf('Skip')!==-1) && allBtns[i].offsetParent !== null){
+                                        var parent = allBtns[i].closest('.ytp-ad-module,.ytp-ad-player-overlay,.ytp-ce-element,[class*="ad-"]');
+                                        if(parent || document.querySelector('.ad-showing,.ytp-ad-player-overlay-instream-info')){
+                                            allBtns[i].click(); return;
+                                        }
+                                    }
+                                }
                                 var adShowing = document.querySelector('.ad-showing');
                                 if(!adShowing) {
                                     if(wasMuted){
@@ -332,8 +346,6 @@ impl TabManager {
                                     }
                                     return;
                                 }
-                                var skipBtn = document.querySelector('.ytp-skip-ad-button,.ytp-ad-skip-button-modern,.ytp-ad-skip-button,button.ytp-ad-skip-button-modern,[class*="skip-button"]');
-                                if(skipBtn && skipBtn.offsetParent !== null){ skipBtn.click(); return; }
                                 var video = document.querySelector('.ad-showing video');
                                 if(video){
                                     if(!wasMuted){ video.muted = true; wasMuted = true; }
