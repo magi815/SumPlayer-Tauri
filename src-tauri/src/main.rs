@@ -981,20 +981,32 @@ fn main() {
                 }
             }
 
-            // Auto-check for updates (silent, non-blocking)
+            // Auto-check for updates and install if available
             let update_handle = app.handle().clone();
             tauri::async_runtime::spawn(async move {
                 tokio::time::sleep(std::time::Duration::from_secs(5)).await;
                 if let Ok(updater) = update_handle.updater() {
                     match updater.check().await {
                         Ok(Some(update)) => {
-                            use tauri::Emitter;
-                            let _ = update_handle.emit("update-available", serde_json::json!({
-                                "version": update.version,
-                                "body": update.body
-                            }));
+                            let version = update.version.clone();
+                            println!("[updater] Update available: v{}", version);
+                            // Download and install
+                            match update.download_and_install(|_, _| {}, || {}).await {
+                                Ok(_) => {
+                                    println!("[updater] Update v{} installed, restarting...", version);
+                                    update_handle.restart();
+                                }
+                                Err(e) => {
+                                    println!("[updater] Failed to install update: {}", e);
+                                }
+                            }
                         }
-                        _ => {}
+                        Ok(None) => {
+                            println!("[updater] No update available");
+                        }
+                        Err(e) => {
+                            println!("[updater] Update check failed: {}", e);
+                        }
                     }
                 }
             });
