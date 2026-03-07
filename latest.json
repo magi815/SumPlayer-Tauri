@@ -1,11 +1,11 @@
 {
-  "version": "1.0.11",
-  "notes": "6-layer YouTube ad bypass (document-start injection), native Win32 update dialog",
-  "pub_date": "2026-03-08T21:00:00Z",
+  "version": "1.0.12",
+  "notes": "Fix in-feed ad hiding on homepage",
+  "pub_date": "2026-03-08T22:00:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZUFreStEbzlDSnU0a21wWjErYy9NK1Mzemt0L2RWcVFneDVzODJFMmNVTFNQU0Y0RmF0NWhjOGNYbW9pNzlRTEVBSWg0S2ovQ0FHVlBhaXhOQk9wRnkvUVFIdjN5QmdvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzcyOTEzNzEzCWZpbGU6U3VtUGxheWVyXzEuMC4xMV94NjQtc2V0dXAuZXhlCjVGK1czbVRGMzlCWWtxNnByaVlVc2s2TlR3c2I5YUpHemRWSzNDejlhaGg4dzIxSnRPbVkzeS85ckJrWnVTcjdzUkk2cmc0YnBrOHJOdUtidlpXd0R3PT0K",
-      "url": "https://github.com/magi815/SumPlayer-Tauri/releases/download/v1.0.11/SumPlayer_1.0.11_x64-setup.exe"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUldTZUFreStEbzlDSnVObzJoUm45d0RQSDlPSG4xbmZmeWlDaWFWamxvZ0duMW4wU2V2blNRSitkekxTZDZjZy83aTRlMWcrS1lJNmlvbGJ2RDMya2ZTZ3ZrSGhPZDcwSGc4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzcyOTE0MDk3CWZpbGU6U3VtUGxheWVyXzEuMC4xMl94NjQtc2V0dXAuZXhlCkw1NXRjbXo1R2p4SzFuamplaTR6S1FieW0za3VRVGV3R2xzYmh0elc3WllRRWRmR3JmRDBpSUJCTnJiK3lTSGhrbnNhc3htN2NFcC9rdHBrR0xVQUNRPT0K",
+      "url": "https://github.com/magi815/SumPlayer-Tauri/releases/download/v1.0.12/SumPlayer_1.0.12_x64-setup.exe"
     }
   }
 }

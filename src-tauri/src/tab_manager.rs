@@ -257,7 +257,7 @@ impl TabManager {
 
                 // Layer 5: CSS hiding
                 var style=document.createElement('style');
-                style.textContent='.ytp-ad-module,.ytp-ad-overlay-container,.ytp-ad-message-container,.ytp-ad-preview-container,.ytp-ad-skip-button-container,.ytp-ad-text,.ytp-ad-image-overlay,.video-ads,#player-ads,ytd-action-companion-ad-renderer,ytd-promoted-sparkles-web-renderer,ytd-ad-slot-renderer,ytd-banner-promo-renderer,ytd-statement-banner-renderer,ytd-promoted-video-renderer,ytd-display-ad-renderer,ytd-primetime-promo-renderer,#masthead-ad,ytd-enforcement-message-view-model,tp-yt-iron-overlay-backdrop.opened{display:none!important}';
+                style.textContent='.ytp-ad-module,.ytp-ad-overlay-container,.ytp-ad-message-container,.ytp-ad-preview-container,.ytp-ad-skip-button-container,.ytp-ad-text,.ytp-ad-image-overlay,.video-ads,#player-ads,ytd-action-companion-ad-renderer,ytd-promoted-sparkles-web-renderer,ytd-ad-slot-renderer,ytd-banner-promo-renderer,ytd-statement-banner-renderer,ytd-promoted-video-renderer,ytd-display-ad-renderer,ytd-primetime-promo-renderer,ytd-in-feed-ad-layout-renderer,ytd-mealbar-promo-renderer,#masthead-ad,ytd-enforcement-message-view-model,tp-yt-iron-overlay-backdrop.opened{display:none!important}';
                 (document.head||document.documentElement).appendChild(style);
 
                 // Layer 6: MutationObserver for enforcement popups
@@ -266,8 +266,9 @@ impl TabManager {
                         for(var n=0;n<mutations[m].addedNodes.length;n++){
                             var node=mutations[m].addedNodes[n];
                             if(!(node instanceof HTMLElement)) continue;
-                            var adSlot=node.matches&&node.matches('ytd-ad-slot-renderer')?node:(node.querySelector&&node.querySelector('ytd-ad-slot-renderer'));
-                            if(adSlot){var container=adSlot.closest('ytd-rich-item-renderer');if(container){container.style.setProperty('display','none','important');}}
+                            var adSel='ytd-ad-slot-renderer,ytd-in-feed-ad-layout-renderer,ytd-promoted-sparkles-web-renderer,ytd-promoted-video-renderer,ytd-display-ad-renderer';
+                            var adSlot=node.matches&&node.matches(adSel)?node:(node.querySelector&&node.querySelector(adSel));
+                            if(adSlot){var container=adSlot.closest('ytd-rich-item-renderer,ytd-video-renderer,ytd-compact-video-renderer')||adSlot;container.style.setProperty('display','none','important');}
                             var enforcement=node.matches&&node.matches('ytd-enforcement-message-view-model,tp-yt-paper-dialog')?node:(node.querySelector&&node.querySelector('ytd-enforcement-message-view-model'));
                             if(enforcement){
                                 var dialog=enforcement.closest&&enforcement.closest('tp-yt-paper-dialog')||enforcement;
@@ -285,10 +286,10 @@ impl TabManager {
 
                 window.addEventListener('yt-navigate-finish',function(){
                     requestAnimationFrame(function(){
-                        var slots=document.querySelectorAll('ytd-ad-slot-renderer');
+                        var slots=document.querySelectorAll('ytd-ad-slot-renderer,ytd-in-feed-ad-layout-renderer,ytd-promoted-sparkles-web-renderer,ytd-promoted-video-renderer,ytd-display-ad-renderer');
                         for(var i=0;i<slots.length;i++){
-                            var c=slots[i].closest('ytd-rich-item-renderer');
-                            if(c) c.style.setProperty('display','none','important');
+                            var c=slots[i].closest('ytd-rich-item-renderer,ytd-video-renderer,ytd-compact-video-renderer')||slots[i];
+                            c.style.setProperty('display','none','important');
                         }
                     });
                 });
