@@ -121,6 +121,21 @@ impl TabManager {
             .on_page_load(move |webview, payload| {
                 if let tauri::webview::PageLoadEvent::Finished = payload.event() {
                     let url_str = payload.url().to_string();
+
+                    // Auto-close sponsor/ad redirect pages
+                    if url_str.contains("googleadservices.com")
+                        || url_str.contains("doubleclick.net/")
+                        || url_str.contains("googlesyndication.com")
+                        || url_str.contains("/pagead/")
+                        || url_str.contains("/aclk?")
+                    {
+                        let _ = webview.eval(&format!(
+                            "setTimeout(function(){{ if(window.__TAURI__) window.__TAURI__.core.invoke('tab_close', {{ id: {} }}); }}, 100)",
+                            tab_id
+                        ));
+                        return;
+                    }
+
                     // Inject script to report title/URL back to Rust
                     let js = format!(
                         r#"setTimeout(function(){{ if(window.__TAURI__){{
@@ -327,6 +342,25 @@ impl TabManager {
                             }, 500);
                         })()"#;
                         let _ = webview.eval(adblock_js);
+
+                        // Block window.open to ad/sponsor URLs
+                        let sponsor_block_js = r#"(function(){
+                            if(window.__sp_sponsor_block) return;
+                            window.__sp_sponsor_block = true;
+                            var origOpen = window.open;
+                            window.open = function(url){
+                                if(url && typeof url === 'string'
+                                    && (url.indexOf('googleadservices.com') !== -1
+                                        || url.indexOf('doubleclick.net') !== -1
+                                        || url.indexOf('googlesyndication.com') !== -1
+                                        || url.indexOf('/pagead/') !== -1
+                                        || url.indexOf('/aclk?') !== -1)) {
+                                    return null;
+                                }
+                                return origOpen.apply(this, arguments);
+                            };
+                        })()"#;
+                        let _ = webview.eval(sponsor_block_js);
                     }
 
                     // Emit navigation event to frontend

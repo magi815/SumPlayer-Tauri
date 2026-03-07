@@ -970,14 +970,56 @@ fn main() {
             let wsm = wsm_for_setup.clone();
             if let Some(win) = app.get_webview_window("main") {
                 let state = wsm.blocking_lock().load();
-                if state.width > 0 && state.height > 0 {
-                    let _ = win.set_size(tauri::PhysicalSize::new(state.width, state.height));
-                }
-                if state.x >= 0 && state.y >= 0 {
-                    let _ = win.set_position(tauri::PhysicalPosition::new(state.x, state.y));
-                }
                 if state.is_maximized {
+                    if state.width > 0 && state.height > 0 {
+                        let _ = win.set_size(tauri::PhysicalSize::new(state.width, state.height));
+                    }
                     let _ = win.maximize();
+                } else if state.width > 0 && state.height > 0 {
+                    // Get available monitor area to clamp window position
+                    let monitors: Vec<_> = win.available_monitors()
+                        .unwrap_or_default()
+                        .into_iter()
+                        .collect();
+                    let mut wx = state.x;
+                    let mut wy = state.y;
+                    let mut ww = state.width;
+                    let mut wh = state.height;
+
+                    if !monitors.is_empty() {
+                        // Check if window is visible on any monitor
+                        let visible = monitors.iter().any(|m| {
+                            let mp = m.position();
+                            let ms = m.size();
+                            let mx = mp.x;
+                            let my = mp.y;
+                            let mw = ms.width as i32;
+                            let mh = ms.height as i32;
+                            // At least 100px of the window must be within the monitor
+                            wx < mx + mw - 100
+                                && wx + ww as i32 > mx + 100
+                                && wy < my + mh - 100
+                                && wy + wh as i32 > my + 100
+                        });
+
+                        if !visible {
+                            // Move to primary monitor (first one) with margin
+                            let m = &monitors[0];
+                            let mp = m.position();
+                            let ms = m.size();
+                            // Clamp size to monitor
+                            if ww > ms.width { ww = ms.width; }
+                            if wh > ms.height { wh = ms.height; }
+                            // Center on monitor
+                            wx = mp.x + (ms.width as i32 - ww as i32) / 2;
+                            wy = mp.y + (ms.height as i32 - wh as i32) / 2;
+                        }
+                    }
+
+                    let _ = win.set_size(tauri::PhysicalSize::new(ww, wh));
+                    if wx >= 0 || wy >= 0 {
+                        let _ = win.set_position(tauri::PhysicalPosition::new(wx, wy));
+                    }
                 }
             }
 
