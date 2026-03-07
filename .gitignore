@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+
+# Build output
+src-tauri/target/
+
+# Temp/debug files
+*.png
+*.log
+nul
+test_screenshots/
+
+# PowerShell test/debug scripts
+*.ps1
+
+# Generated files
+generate-icons.mjs
+build.ps1
+
+# Session files
+SESSION_STATUS.md
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Claude
+.claude/

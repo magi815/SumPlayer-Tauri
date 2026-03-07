@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SumPlayer</title>
+  <link rel="stylesheet" href="styles/browser.css">
+</head>
+<body>
+  <div id="browser-chrome">
+    <!-- Title bar (draggable) -->
+    <div id="title-bar" data-tauri-drag-region>
+      <div id="tab-bar" data-tauri-drag-region>
+        <div id="tabs-container"></div>
+        <span id="control-indicator" title="원격 제어 대기 중"></span>
+        <button id="new-tab-btn" title="새 탭 (Ctrl+T)">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <line x1="7" y1="2" x2="7" y2="12"/><line x1="2" y1="7" x2="12" y2="7"/>
+          </svg>
+        </button>
+      </div>
+      <div id="window-controls">
+        <button id="btn-minimize" title="최소화">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <line x1="2" y1="6" x2="10" y2="6"/>
+          </svg>
+        </button>
+        <button id="btn-maximize" title="최대화">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2">
+            <rect x="2" y="2" width="8" height="8" rx="1.5"/>
+          </svg>
+        </button>
+        <button id="btn-close" title="닫기">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <line x1="2" y1="2" x2="10" y2="10"/><line x1="10" y1="2" x2="2" y2="10"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Navigation bar -->
+    <div id="nav-bar">
+      <div id="nav-buttons">
+        <button id="btn-back" title="뒤로 (Alt+Left)">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M10 3L5 8l5 5"/>
+          </svg>
+        </button>
+        <button id="btn-forward" title="앞으로 (Alt+Right)">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6 3l5 5-5 5"/>
+          </svg>
+        </button>
+        <button id="btn-reload" title="새로고침 (F5)">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2.5 8a5.5 5.5 0 1 1 1.3 3.5"/><path d="M2 5v3.5h3.5"/>
+          </svg>
+        </button>
+        <button id="btn-home" title="홈">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 8.5l5-5 5 5"/><path d="M4 8v4.5a1 1 0 0 0 1 1h2v-3h2v3h2a1 1 0 0 0 1-1V8"/>
+          </svg>
+        </button>
+      </div>
+      <div id="address-bar">
+        <input type="text" id="url-input" placeholder="URL을 입력하세요" spellcheck="false">
+        <span id="zoom-indicator" title="확대/축소 수준"></span>
+      </div>
+      <button id="btn-screenshot" title="전체 페이지 스크린샷">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3.5" width="12" height="10" rx="2"/><circle cx="8" cy="8.5" r="2.5"/><path d="M5.5 3.5L6.5 2h3l1 1.5"/>
+        </svg>
+      </button>
+      <div id="menu-wrapper">
+        <button id="btn-menu" title="메뉴">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+            <circle cx="8" cy="3" r="1.3"/><circle cx="8" cy="8" r="1.3"/><circle cx="8" cy="13" r="1.3"/>
+          </svg>
+        </button>
+        <div id="menu-dropdown" class="hidden">
+          <div class="menu-item" id="menu-home">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 8.5l5-5 5 5"/><path d="M4 8v4.5a1 1 0 0 0 1 1h2v-3h2v3h2a1 1 0 0 0 1-1V8"/>
+            </svg>
+            <span>홈페이지</span>
+          </div>
+          <div class="menu-item" id="menu-history">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="8" cy="8" r="6"/><path d="M8 4.5V8l2.5 1.5"/>
+            </svg>
+            <span>방문 기록</span>
+          </div>
+          <hr>
+          <div class="menu-item menu-has-sub" id="menu-translate">
+            <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 3h7M5.5 3v-1M3.5 3c.5 2 2 4 4 5.5M7 3c-.5 2-2 4-4 5.5"/><path d="M9 9l2 5 2-5M9.5 12.5h3"/>
+            </svg>
+            <span>페이지 번역</span>
+            <svg class="menu-arrow" width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 2l3 3-3 3"/></svg>
+            <div class="menu-submenu" id="translate-submenu">
+              <div class="menu-item" data-lang="ko">한국어</div>
+              <div class="menu-item" data-lang="en">English</div>
+              <div class="menu-item" data-lang="ja">日本語</div>
+              <div class="menu-item" data-lang="zh-CN">中文(简体)</div>
+              <div class="menu-item" data-lang="es">Español</div>
+              <div class="menu-item" data-lang="fr">Français</div>
+              <div class="menu-item" data-lang="de">Deutsch</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Find bar (hidden by default) -->
+    <div id="find-bar" class="hidden">
+      <input type="text" id="find-input" placeholder="페이지에서 찾기..." spellcheck="false">
+      <span id="find-matches">0/0</span>
+      <button id="find-prev" title="이전 (Shift+Enter)">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 8l4-4 4 4"/>
+        </svg>
+      </button>
+      <button id="find-next" title="다음 (Enter)">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M2 4l4 4 4-4"/>
+        </svg>
+      </button>
+      <button id="find-close" title="닫기 (ESC)">
+        <svg width="11" height="11" viewBox="0 0 11 11" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <line x1="2" y1="2" x2="9" y2="9"/><line x1="9" y1="2" x2="2" y2="9"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Bookmark bar (always visible) -->
+    <div id="bookmark-bar">
+      <div id="bookmark-items"></div>
+      <button id="btn-bookmark" title="북마크 추가/수정 (Ctrl+D)">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round">
+          <path d="M7 1.5l1.76 3.56 3.94.57-2.85 2.78.67 3.92L7 10.5l-3.52 1.83.67-3.92L1.3 5.63l3.94-.57z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Side panels (history, downloads) -->
+  <div id="panel-overlay" class="hidden">
+    <div id="panel">
+      <div id="panel-header">
+        <span id="panel-title">기록</span>
+        <button id="panel-close">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+            <line x1="2" y1="2" x2="10" y2="10"/><line x1="10" y1="2" x2="2" y2="10"/>
+          </svg>
+        </button>
+      </div>
+      <div id="panel-toolbar">
+        <input type="text" id="panel-search" placeholder="검색..." spellcheck="false">
+        <button id="panel-clear" title="전체 삭제">전체 삭제</button>
+      </div>
+      <div id="panel-content"></div>
+    </div>
+  </div>
+
+  <!-- Homepage settings dialog -->
+  <div id="homepage-dialog" class="hidden">
+    <div id="homepage-dialog-inner">
+      <div id="homepage-dialog-title">홈페이지 설정</div>
+      <label>홈페이지 URL</label>
+      <input type="text" id="homepage-url-input" placeholder="https://www.google.com" spellcheck="false">
+      <div id="homepage-dialog-buttons">
+        <button id="homepage-current-btn">현재 페이지</button>
+        <div style="flex:1"></div>
+        <button id="homepage-cancel-btn">취소</button>
+        <button id="homepage-save-btn">저장</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="scripts/browser-ui.js"></script>
+</body>
+</html>

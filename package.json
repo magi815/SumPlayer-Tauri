@@ -1,0 +1,17 @@
+{
+  "name": "sumplayer-tauri",
+  "version": "1.0.0",
+  "description": "SumPlayer browser rebuilt with Tauri v2",
+  "scripts": {
+    "dev": "cargo tauri dev",
+    "build": "cargo tauri build",
+    "tauri": "cargo tauri"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "^2",
+    "sharp": "^0.34.5"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2"
+  }
+}

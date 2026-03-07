@@ -1,0 +1,50 @@
+{
+  "productName": "SumPlayer",
+  "version": "1.0.0",
+  "identifier": "com.sumplayer.browser",
+  "build": {
+    "frontendDist": "../src",
+    "devUrl": "http://localhost:1420",
+    "beforeDevCommand": "npx http-server ./src -p 1420 -c-1 --cors -s",
+    "beforeBuildCommand": ""
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [
+      {
+        "title": "SumPlayer",
+        "width": 1280,
+        "height": 800,
+        "minWidth": 600,
+        "minHeight": 400,
+        "decorations": false,
+        "transparent": false,
+        "dragDropEnabled": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self' ipc: http://ipc.localhost; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' ipc: http://ipc.localhost; img-src 'self' https: data:; connect-src 'self' https: http: ipc: http://ipc.localhost"
+    }
+  },
+  "bundle": {
+    "resources": ["resources/*"],
+    "active": true,
+    "targets": "all",
+    "createUpdaterArtifacts": true,
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ]
+  },
+  "plugins": {
+    "updater": {
+      "endpoints": [
+        "https://github.com/magi815/SumPlayer-Tauri/releases/latest/download/latest.json"
+      ],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDI2NDI4RjBFQkU0QzAyOUUKUldTZUFreStEbzlDSnJMQlhvbTN5dXZDMXZqRVd6aFdqK0ltMVRTdXVEdlVxK2dqakdjMUZUMEMK"
+    }
+  }
+}

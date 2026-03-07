@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --bg-deep: #1a1b1e;
+    --bg-base: #25262b;
+    --bg-surface: #2c2d32;
+    --bg-elevated: #33343a;
+    --accent: #7c5cfc;
+    --accent-hover: #9178ff;
+    --accent-subtle: rgba(124, 92, 252, 0.15);
+    --secondary: #5ce0d8;
+    --text-primary: #e4e5e9;
+    --text-secondary: #8b8d93;
+    --text-muted: #5f6168;
+    --border: rgba(255, 255, 255, 0.06);
+    --border-hover: rgba(255, 255, 255, 0.12);
+    --hover-bg: rgba(255, 255, 255, 0.06);
+    --hover-bg-strong: rgba(255, 255, 255, 0.1);
+    --glass-bg: rgba(37, 38, 43, 0.85);
+    --glass-blur: blur(16px);
+    --danger: #ef5350;
+    --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  html, body {
+    width: 100%; height: 100%;
+    background: transparent;
+    overflow: hidden;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: var(--text-primary);
+    user-select: none;
+  }
+  #overlay {
+    width: 100%; height: 100%;
+    background: transparent;
+    position: relative;
+  }
+
+  /* ── Dropdown Menu ── */
+  .dropdown-menu {
+    position: absolute;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-hover);
+    border-radius: 10px;
+    padding: 4px;
+    min-width: 180px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+    font-size: 13px;
+  }
+  .menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.1s;
+    white-space: nowrap;
+  }
+  .menu-item:hover { background: var(--hover-bg); }
+  .menu-item svg { flex-shrink: 0; opacity: 0.7; }
+  .dropdown-menu hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 3px 8px;
+  }
+  .menu-has-sub { position: relative; }
+  .menu-has-sub .menu-arrow { margin-left: auto; opacity: 0.4; }
+  .menu-submenu {
+    display: none;
+    position: absolute;
+    right: 100%;
+    top: 0;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-hover);
+    border-radius: 10px;
+    padding: 4px;
+    min-width: 120px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+  }
+  .menu-has-sub:hover .menu-submenu { display: block; }
+
+  /* ── Panel (History/Downloads) ── */
+  #panel-container {
+    display: none;
+    position: absolute;
+    top: 0; right: 0; bottom: 0;
+    width: 380px;
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-left: 1px solid var(--border);
+    flex-direction: column;
+    box-shadow: -8px 0 24px rgba(0,0,0,0.25);
+    animation: slideInRight 0.25s var(--ease-out);
+  }
+  #panel-container.visible { display: flex; }
+  @keyframes slideInRight {
+    from { transform: translateX(100%); }
+    to { transform: translateX(0); }
+  }
+  .p-header {
+    display: flex; align-items: center; justify-content: space-between;
+    height: 44px; padding: 0 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .p-title { font-size: 15px; font-weight: 600; }
+  .p-close {
+    background: transparent; border: none; color: var(--text-secondary);
+    width: 28px; height: 28px; border-radius: 8px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s, color 0.15s;
+  }
+  .p-close:hover { background: var(--hover-bg); color: var(--text-primary); }
+  .p-toolbar {
+    display: flex; align-items: center; padding: 8px 14px; gap: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .p-search {
+    flex: 1; height: 30px; padding: 0 10px;
+    background: var(--bg-surface); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text-primary); font-size: 13px; outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .p-search:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-subtle); }
+  .p-clear {
+    height: 30px; padding: 0 12px; background: transparent;
+    border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text-primary); font-size: 12px; cursor: pointer; white-space: nowrap;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .p-clear:hover { background: var(--hover-bg); border-color: var(--border-hover); }
+  .p-content {
+    flex: 1; overflow-y: auto; padding: 4px 0;
+  }
+  .p-content::-webkit-scrollbar { width: 6px; }
+  .p-content::-webkit-scrollbar-track { background: transparent; }
+  .p-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+  .p-entry {
+    display: flex; align-items: center; padding: 8px 14px; gap: 10px;
+    cursor: pointer; font-size: 13px; border-radius: 4px; margin: 0 4px;
+    transition: background 0.15s;
+  }
+  .p-entry:hover { background: var(--hover-bg); }
+  .p-entry-info { flex: 1; overflow: hidden; }
+  .p-entry-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--text-primary); }
+  .p-entry-url { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 11px; color: var(--text-secondary); }
+  .p-entry-time { font-size: 11px; color: var(--text-secondary); white-space: nowrap; flex-shrink: 0; }
+  .p-entry-delete {
+    background: transparent; border: none; color: var(--text-secondary);
+    width: 22px; height: 22px; border-radius: 6px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; opacity: 0;
+    transition: opacity 0.15s, background 0.15s;
+  }
+  .p-entry:hover .p-entry-delete { opacity: 1; }
+  .p-entry-delete:hover { background: var(--hover-bg-strong); color: var(--text-primary); }
+  .p-date-header {
+    padding: 10px 14px 4px; font-size: 12px; font-weight: 600;
+    color: var(--text-secondary); letter-spacing: 0.02em;
+  }
+
+  /* ── Dialog (Homepage) ── */
+  #dialog-container {
+    display: none;
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    align-items: flex-start; justify-content: center;
+    padding-top: 40px;
+  }
+  #dialog-container.visible { display: flex; }
+  .dlg-inner {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    width: 400px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .dlg-title { font-size: 15px; font-weight: 600; margin-bottom: 14px; }
+  .dlg-inner label { display: block; font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
+  .dlg-inner input[type="text"] {
+    width: 100%; height: 34px; padding: 0 12px;
+    background: var(--bg-surface); border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text-primary); font-size: 13px; outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .dlg-inner input[type="text"]:focus { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-subtle); }
+  .dlg-buttons {
+    display: flex; align-items: center; gap: 8px; margin-top: 16px;
+  }
+  .dlg-buttons button {
+    height: 32px; padding: 0 14px; border-radius: 8px; border: 1px solid var(--border);
+    background: transparent; color: var(--text-primary); font-size: 13px; cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+  }
+  .dlg-buttons button:hover { background: var(--hover-bg); border-color: var(--border-hover); }
+  .dlg-buttons button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .dlg-buttons button.primary:hover { background: var(--accent-hover); }
+  .dlg-buttons .spacer { flex: 1; }
+</style>
+</head>
+<body>
+<div id="overlay">
+  <!-- Dropdown menu (3-dot, bookmark context) -->
+  <div id="dropdown-menu" class="dropdown-menu" style="display:none;"></div>
+
+  <!-- Panel (history/downloads) -->
+  <div id="panel-container">
+    <div class="p-header">
+      <span class="p-title" id="p-title"></span>
+      <button class="p-close" id="p-close">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+          <line x1="2" y1="2" x2="10" y2="10"/><line x1="10" y1="2" x2="2" y2="10"/>
+        </svg>
+      </button>
+    </div>
+    <div class="p-toolbar">
+      <input type="text" class="p-search" id="p-search" placeholder="검색..." spellcheck="false">
+      <button class="p-clear" id="p-clear"></button>
+    </div>
+    <div class="p-content" id="p-content"></div>
+  </div>
+
+  <!-- Dialog (homepage settings) -->
+  <div id="dialog-container">
+    <div class="dlg-inner" id="dlg-inner"></div>
+  </div>
+</div>
+
+<script>
+const { listen, emit } = window.__TAURI__.event;
+const { invoke } = window.__TAURI__.core;
+
+const overlay = document.getElementById('overlay');
+const dropdownMenu = document.getElementById('dropdown-menu');
+const panelContainer = document.getElementById('panel-container');
+const dialogContainer = document.getElementById('dialog-container');
+
+let currentMode = null; // 'menu', 'panel', 'dialog'
+
+// Signal that overlay is ready to receive events
+emit('overlay-ready', {});
+
+function closeOverlay() {
+  invoke('hide_menu_overlay');
+}
+
+// Click outside to close
+overlay.addEventListener('click', (e) => {
+  if (currentMode === 'menu' && !e.target.closest('#dropdown-menu')) {
+    closeOverlay();
+  } else if (currentMode === 'panel' && !e.target.closest('#panel-container')) {
+    closeOverlay();
+  } else if (currentMode === 'dialog' && !e.target.closest('.dlg-inner')) {
+    closeOverlay();
+  }
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeOverlay();
+});
+
+// ─── Dropdown Menu ───
+listen('overlay-show-menu', (event) => {
+  currentMode = 'menu';
+  panelContainer.classList.remove('visible');
+  dialogContainer.classList.remove('visible');
+  const { items, x, y } = event.payload;
+  dropdownMenu.style.display = 'block';
+  dropdownMenu.style.left = (x || 0) + 'px';
+  dropdownMenu.style.top = (y || 0) + 'px';
+  dropdownMenu.innerHTML = '';
+  buildMenuItems(dropdownMenu, items);
+});
+
+function buildMenuItems(container, items) {
+  items.forEach(item => {
+    if (item.type === 'divider') {
+      container.appendChild(document.createElement('hr'));
+      return;
+    }
+    const div = document.createElement('div');
+    div.className = 'menu-item';
+    if (item.icon) {
+      const ic = document.createElement('span');
+      ic.innerHTML = item.icon;
+      div.appendChild(ic);
+    }
+    const lbl = document.createElement('span');
+    lbl.textContent = item.label;
+    div.appendChild(lbl);
+
+    if (item.submenu) {
+      div.classList.add('menu-has-sub');
+      const arrow = document.createElement('span');
+      arrow.className = 'menu-arrow';
+      arrow.innerHTML = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 2l3 3-3 3"/></svg>';
+      div.appendChild(arrow);
+      const sub = document.createElement('div');
+      sub.className = 'menu-submenu';
+      item.submenu.forEach(si => {
+        const sd = document.createElement('div');
+        sd.className = 'menu-item';
+        sd.textContent = si.label;
+        sd.addEventListener('click', (e) => {
+          e.stopPropagation();
+          invoke('menu_overlay_action', { action: si.action, payload: si.payload || '' });
+        });
+        sub.appendChild(sd);
+      });
+      div.appendChild(sub);
+    } else {
+      div.addEventListener('click', (e) => {
+        e.stopPropagation();
+        invoke('menu_overlay_action', { action: item.action, payload: item.payload || '' });
+      });
+    }
+    container.appendChild(div);
+  });
+}
+
+// ─── Panel (History / Downloads) ───
+let panelType = '';
+
+listen('overlay-show-panel', async (event) => {
+  currentMode = 'panel';
+  dropdownMenu.style.display = 'none';
+  dialogContainer.classList.remove('visible');
+  panelContainer.classList.add('visible');
+  panelType = event.payload.type;
+
+  const pTitle = document.getElementById('p-title');
+  const pSearch = document.getElementById('p-search');
+  const pClear = document.getElementById('p-clear');
+  const pContent = document.getElementById('p-content');
+
+  if (panelType === 'history') {
+    pTitle.textContent = '방문 기록';
+    pSearch.placeholder = '기록 검색...';
+    pClear.textContent = '전체 삭제';
+    loadHistory('');
+  } else if (panelType === 'downloads') {
+    pTitle.textContent = '다운로드';
+    pSearch.placeholder = '다운로드 검색...';
+    pClear.textContent = '목록 삭제';
+    loadDownloads();
+  }
+});
+
+document.getElementById('p-close').addEventListener('click', closeOverlay);
+
+document.getElementById('p-search').addEventListener('input', (e) => {
+  const q = e.target.value.trim();
+  if (panelType === 'history') loadHistory(q);
+});
+
+document.getElementById('p-clear').addEventListener('click', () => {
+  if (panelType === 'history') {
+    invoke('history_clear').then(() => loadHistory(''));
+  } else if (panelType === 'downloads') {
+    invoke('download_clear_history').then(() => loadDownloads());
+  }
+});
+
+async function loadHistory(query) {
+  const pContent = document.getElementById('p-content');
+  const entries = await invoke('history_list', { query: query || null, limit: 200, offset: 0 });
+  pContent.innerHTML = '';
+  let lastDate = '';
+  for (const entry of entries) {
+    const d = new Date(entry.visitedAt);
+    const dateStr = d.toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' });
+    if (dateStr !== lastDate) {
+      lastDate = dateStr;
+      const hdr = document.createElement('div');
+      hdr.className = 'p-date-header';
+      hdr.textContent = dateStr;
+      pContent.appendChild(hdr);
+    }
+    const row = document.createElement('div');
+    row.className = 'p-entry';
+    row.innerHTML = `
+      <div class="p-entry-info">
+        <div class="p-entry-title">${esc(entry.title || entry.url)}</div>
+        <div class="p-entry-url">${esc(entry.url)}</div>
+      </div>
+      <span class="p-entry-time">${d.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}</span>
+      <button class="p-entry-delete" data-id="${esc(entry.id)}">
+        <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="2" y1="2" x2="10" y2="10"/><line x1="10" y1="2" x2="2" y2="10"/></svg>
+      </button>`;
+    row.querySelector('.p-entry-info').addEventListener('click', () => {
+      invoke('menu_overlay_action', { action: 'navigate', payload: entry.url });
+    });
+    row.querySelector('.p-entry-delete').addEventListener('click', (e) => {
+      e.stopPropagation();
+      invoke('history_delete', { id: entry.id }).then(() => loadHistory(document.getElementById('p-search').value.trim()));
+    });
+    pContent.appendChild(row);
+  }
+  if (entries.length === 0) {
+    pContent.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted);font-size:13px;">기록이 없습니다</div>';
+  }
+}
+
+async function loadDownloads() {
+  const pContent = document.getElementById('p-content');
+  const history = await invoke('download_history');
+  pContent.innerHTML = '';
+  for (const dl of history) {
+    const row = document.createElement('div');
+    row.className = 'p-entry';
+    row.innerHTML = `
+      <div class="p-entry-info">
+        <div class="p-entry-title">${esc(dl.filename)}</div>
+        <div class="p-entry-url">${esc(formatSize(dl.totalBytes))}</div>
+      </div>
+      <button class="p-entry-delete" style="opacity:1;color:var(--accent);font-size:11px;width:auto;padding:2px 8px;">열기</button>`;
+    row.querySelector('.p-entry-delete').addEventListener('click', () => {
+      invoke('download_open', { path: dl.savePath });
+    });
+    pContent.appendChild(row);
+  }
+  if (history.length === 0) {
+    pContent.innerHTML = '<div style="padding:40px;text-align:center;color:var(--text-muted);font-size:13px;">다운로드 기록이 없습니다</div>';
+  }
+}
+
+function formatSize(bytes) {
+  if (!bytes) return '';
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1048576) return (bytes/1024).toFixed(1) + ' KB';
+  if (bytes < 1073741824) return (bytes/1048576).toFixed(1) + ' MB';
+  return (bytes/1073741824).toFixed(2) + ' GB';
+}
+
+function esc(s) {
+  if (!s) return '';
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+// ─── Dialog (Homepage Settings) ───
+listen('overlay-show-dialog', (event) => {
+  currentMode = 'dialog';
+  dropdownMenu.style.display = 'none';
+  panelContainer.classList.remove('visible');
+  dialogContainer.classList.add('visible');
+
+  const { type, currentUrl, homeUrl } = event.payload;
+  const inner = document.getElementById('dlg-inner');
+
+  if (type === 'homepage') {
+    inner.innerHTML = `
+      <div class="dlg-title">홈페이지 설정</div>
+      <label>홈페이지 URL</label>
+      <input type="text" id="dlg-url" value="${esc(homeUrl || '')}" placeholder="https://www.google.com" spellcheck="false">
+      <div class="dlg-buttons">
+        <button id="dlg-current">현재 페이지</button>
+        <div class="spacer"></div>
+        <button id="dlg-cancel">취소</button>
+        <button id="dlg-save" class="primary">저장</button>
+      </div>`;
+    const urlInput = document.getElementById('dlg-url');
+    urlInput.focus();
+    urlInput.select();
+    document.getElementById('dlg-current').addEventListener('click', () => {
+      if (currentUrl) urlInput.value = currentUrl;
+    });
+    document.getElementById('dlg-cancel').addEventListener('click', closeOverlay);
+    document.getElementById('dlg-save').addEventListener('click', () => {
+      const url = urlInput.value.trim();
+      if (url) {
+        invoke('menu_overlay_action', { action: 'save-homepage', payload: url });
+      } else {
+        closeOverlay();
+      }
+    });
+  }
+});
+</script>
+</body>
+</html>
