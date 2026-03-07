@@ -41,6 +41,7 @@ pub struct BookmarkManager {
 impl BookmarkManager {
     pub fn new(data_dir: PathBuf) -> Self {
         let file_path = data_dir.join("bookmarks.json");
+        let first_run = !file_path.exists();
         let mut mgr = BookmarkManager {
             bookmarks: Vec::new(),
             folders: Vec::new(),
@@ -48,6 +49,10 @@ impl BookmarkManager {
             file_path,
         };
         mgr.load();
+        if first_run && mgr.bookmarks.is_empty() {
+            mgr.add_bookmark("https://www.google.com", "Google", None, None);
+            mgr.add_bookmark("https://www.youtube.com", "YouTube", None, None);
+        }
         mgr
     }
 

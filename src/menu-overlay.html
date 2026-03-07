@@ -232,30 +232,55 @@
 </div>
 
 <script>
-const { listen, emit } = window.__TAURI__.event;
-const { invoke } = window.__TAURI__.core;
-
 const overlay = document.getElementById('overlay');
 const dropdownMenu = document.getElementById('dropdown-menu');
 const panelContainer = document.getElementById('panel-container');
 const dialogContainer = document.getElementById('dialog-container');
 
 let currentMode = null; // 'menu', 'panel', 'dialog'
-
-// Signal that overlay is ready to receive events
-emit('overlay-ready', {});
+let listen, emit, invoke;
 
 function closeOverlay() {
-  invoke('hide_menu_overlay');
+  if (invoke) {
+    invoke('hide_menu_overlay');
+  }
 }
 
-// Click outside to close
+// Wait for __TAURI__ to be available (may not be injected immediately)
+function initOverlay() {
+  if (!window.__TAURI__ || !window.__TAURI__.event || !window.__TAURI__.core) {
+    return false;
+  }
+  listen = window.__TAURI__.event.listen;
+  emit = window.__TAURI__.event.emit;
+  invoke = window.__TAURI__.core.invoke;
+  emit('overlay-ready', {});
+  return true;
+}
+
+if (!initOverlay()) {
+  // Retry until __TAURI__ is available, with a hard timeout to auto-close
+  let retries = 0;
+  const retryInterval = setInterval(() => {
+    retries++;
+    if (initOverlay()) {
+      clearInterval(retryInterval);
+      setupListeners();
+    } else if (retries > 30) { // 1.5s max wait
+      clearInterval(retryInterval);
+      // __TAURI__ never loaded - close overlay via webview close
+      try { window.close(); } catch(e) {}
+    }
+  }, 50);
+} else {
+  setupListeners();
+}
+
+// Click outside to close - always register regardless of __TAURI__ state
 overlay.addEventListener('click', (e) => {
-  if (currentMode === 'menu' && !e.target.closest('#dropdown-menu')) {
-    closeOverlay();
-  } else if (currentMode === 'panel' && !e.target.closest('#panel-container')) {
-    closeOverlay();
-  } else if (currentMode === 'dialog' && !e.target.closest('.dlg-inner')) {
+  if (!currentMode || (currentMode === 'menu' && !e.target.closest('#dropdown-menu'))
+      || (currentMode === 'panel' && !e.target.closest('#panel-container'))
+      || (currentMode === 'dialog' && !e.target.closest('.dlg-inner'))) {
     closeOverlay();
   }
 });
@@ -263,6 +288,8 @@ overlay.addEventListener('click', (e) => {
 document.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') closeOverlay();
 });
+
+function setupListeners() {
 
 // ─── Dropdown Menu ───
 listen('overlay-show-menu', (event) => {
@@ -482,6 +509,8 @@ listen('overlay-show-dialog', (event) => {
     });
   }
 });
+
+} // end setupListeners
 </script>
 </body>
 </html>
