@@ -1,10 +1,10 @@
 {
   "version": "1.0.11",
-  "notes": "Overhaul ad blocker (network interception + playerVars reload), native Win32 update dialog",
+  "notes": "6-layer YouTube ad bypass (document-start injection), native Win32 update dialog",
   "pub_date": "2026-03-08T21:00:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZUFreStEbzlDSm1YZkJiOVV2WG52N3NOMDJEMXF1TVY4SEpEaFowYldvR05wZ1pMOUZ5YW9WSEt6S2RFUmJPelY0YU1PZE55VkI0VUpPaDhSQTNBd2E5RWcyOGNwdHdVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzcyOTEzMTgzCWZpbGU6U3VtUGxheWVyXzEuMC4xMV94NjQtc2V0dXAuZXhlCnduQkdVaGRZVzhvZzhCWDZEM3p3b1ZCNWRXVzgvVnJPVnlHcGRlR2l2K1ZlZ1B1SjBycVZZVnNTZEtoaGVuL3lNUWk3bW5HajQyeU9HOE5GVDE4YUFnPT0K",
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZUFreStEbzlDSnU0a21wWjErYy9NK1Mzemt0L2RWcVFneDVzODJFMmNVTFNQU0Y0RmF0NWhjOGNYbW9pNzlRTEVBSWg0S2ovQ0FHVlBhaXhOQk9wRnkvUVFIdjN5QmdvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzcyOTEzNzEzCWZpbGU6U3VtUGxheWVyXzEuMC4xMV94NjQtc2V0dXAuZXhlCjVGK1czbVRGMzlCWWtxNnByaVlVc2s2TlR3c2I5YUpHemRWSzNDejlhaGg4dzIxSnRPbVkzeS85ckJrWnVTcjdzUkk2cmc0YnBrOHJOdUtidlpXd0R3PT0K",
       "url": "https://github.com/magi815/SumPlayer-Tauri/releases/download/v1.0.11/SumPlayer_1.0.11_x64-setup.exe"
     }
   }
