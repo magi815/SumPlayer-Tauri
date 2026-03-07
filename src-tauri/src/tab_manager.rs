@@ -239,7 +239,7 @@ impl TabManager {
                         let shorts_js = r#"(function(){
                             if(window.__sp_shorts_injected) return;
                             window.__sp_shorts_injected = true;
-                            window.__sp_shorts_auto = false;
+                            window.__sp_shorts_auto = true;
 
                             function isShorts(){
                                 if(location.pathname.startsWith('/shorts/')) return true;
@@ -619,7 +619,7 @@ impl TabManager {
         if let Some(active_id) = self.active_tab_id {
             let label = format!("tab-{}", active_id);
             if let Some(webview) = app.get_webview(&label) {
-                let _ = webview.eval("window.location.reload()");
+                let _ = webview.eval("window.scrollTo(0,0);window.location.reload()");
             }
         }
     }

@@ -309,6 +309,13 @@ function buildMenuItems(container, items) {
       container.appendChild(document.createElement('hr'));
       return;
     }
+    if (item.type === 'version') {
+      const ver = document.createElement('div');
+      ver.style.cssText = 'padding:6px 14px;font-size:11px;color:var(--text-muted);text-align:center;cursor:default;';
+      ver.textContent = item.label;
+      container.appendChild(ver);
+      return;
+    }
     const div = document.createElement('div');
     div.className = 'menu-item';
     if (item.icon) {

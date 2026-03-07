@@ -853,6 +853,19 @@ async fn ui_action(app: tauri::AppHandle, action: String) -> Result<(), String> 
     Ok(())
 }
 
+// ─── Update Command (user-confirmed) ───
+
+#[tauri::command]
+async fn update_confirm(app: tauri::AppHandle) -> Result<(), String> {
+    let updater = app.updater().map_err(|e| e.to_string())?;
+    let update = updater.check().await.map_err(|e| e.to_string())?;
+    if let Some(update) = update {
+        update.download_and_install(|_, _| {}, || {}).await.map_err(|e| e.to_string())?;
+        app.restart();
+    }
+    Ok(())
+}
+
 fn main() {
     let data_dir = dirs::data_dir()
         .unwrap_or_else(|| std::path::PathBuf::from("."))
@@ -964,6 +977,8 @@ fn main() {
             open_devtools,
             // UI action forwarding
             ui_action,
+            // Update
+            update_confirm,
         ])
         .setup(move |app| {
             // Restore window state from previous session
@@ -1023,39 +1038,22 @@ fn main() {
                 }
             }
 
-            // Auto-check for updates and install if available
+            // Auto-check for updates (only notify, don't auto-install)
             let update_handle = app.handle().clone();
             tauri::async_runtime::spawn(async move {
                 tokio::time::sleep(std::time::Duration::from_secs(5)).await;
-                let _ = update_handle.emit("update-status", serde_json::json!({"status": "checking"}));
                 match update_handle.updater() {
                     Ok(updater) => {
                         match updater.check().await {
                             Ok(Some(update)) => {
                                 let version = update.version.clone();
-                                let _ = update_handle.emit("update-status", serde_json::json!({"status": "downloading", "version": &version}));
-                                match update.download_and_install(|_, _| {}, || {}).await {
-                                    Ok(_) => {
-                                        let _ = update_handle.emit("update-status", serde_json::json!({"status": "installed", "version": &version}));
-                                        tokio::time::sleep(std::time::Duration::from_secs(2)).await;
-                                        update_handle.restart();
-                                    }
-                                    Err(e) => {
-                                        let _ = update_handle.emit("update-status", serde_json::json!({"status": "error", "message": format!("{}", e)}));
-                                    }
-                                }
+                                let _ = update_handle.emit("update-available", serde_json::json!({"version": &version}));
                             }
-                            Ok(None) => {
-                                let _ = update_handle.emit("update-status", serde_json::json!({"status": "up-to-date"}));
-                            }
-                            Err(e) => {
-                                let _ = update_handle.emit("update-status", serde_json::json!({"status": "error", "message": format!("{}", e)}));
-                            }
+                            Ok(None) => {}
+                            Err(_) => {}
                         }
                     }
-                    Err(e) => {
-                        let _ = update_handle.emit("update-status", serde_json::json!({"status": "error", "message": format!("Updater init failed: {}", e)}));
-                    }
+                    Err(_) => {}
                 }
             });
 
