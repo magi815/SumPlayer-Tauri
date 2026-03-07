@@ -1,6 +1,6 @@
 {
   "productName": "SumPlayer",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "identifier": "com.sumplayer.browser",
   "build": {
     "frontendDist": "../src",

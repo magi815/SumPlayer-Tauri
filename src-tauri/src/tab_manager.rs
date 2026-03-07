@@ -117,6 +117,8 @@ impl TabManager {
                 if(window.__sp_adbypass) return;
                 window.__sp_adbypass = true;
 
+                function isShortsPage(){ return location.pathname.startsWith('/shorts/'); }
+
                 var AD_FIELDS = ['adPlacements','playerAds','adSlots','adBreakHeartbeatParams','adBreakParams'];
                 var ENFORCEMENT_FIELDS = ['enforcementMessageViewModel','enforcementMessage','adBlockerOverlay','adBlockDetected'];
 
@@ -175,7 +177,7 @@ impl TabManager {
                         Object.defineProperty(window,name,{
                             get:function(){return val;},
                             set:function(v){
-                                if(v&&typeof v==='object'){
+                                if(v&&typeof v==='object'&&!isShortsPage()){
                                     if(hasAdData(v)) stripAds(v);
                                     try{stripEnforcement(v,0);}catch(e){}
                                 }
@@ -193,7 +195,7 @@ impl TabManager {
                 JSON.parse=function(text,reviver){
                     var result=nativeParse.call(this,text,reviver);
                     try{
-                        if(result&&typeof result==='object'){
+                        if(result&&typeof result==='object'&&!isShortsPage()){
                             if(hasAdData(result)) stripAds(result);
                             if(typeof text==='string'&&text.length>200&&(text.indexOf('nforcement')!==-1||text.indexOf('dBlocker')!==-1)){
                                 stripEnforcement(result,0);
@@ -213,7 +215,7 @@ impl TabManager {
                             var url=self.url||'';
                             var isYT=false;
                             for(var i=0;i<YT_PATHS.length;i++){if(url.indexOf(YT_PATHS[i])!==-1){isYT=true;break;}}
-                            if(data&&typeof data==='object'&&isYT){
+                            if(data&&typeof data==='object'&&isYT&&!isShortsPage()){
                                 if(hasAdData(data)) stripAds(data);
                                 stripEnforcement(data,0);
                             }
@@ -227,12 +229,12 @@ impl TabManager {
                 var nativeFetch=window.fetch;
                 window.fetch=function(input,init){
                     var url=(typeof input==='string')?input:(input&&input.url?input.url:'');
-                    if(isAdVideoUrl(url)) return Promise.resolve(new Response('',{status:204}));
+                    if(!isShortsPage()&&isAdVideoUrl(url)) return Promise.resolve(new Response('',{status:204}));
                     return nativeFetch.call(this,input,init);
                 };
                 var nativeXHROpen=XMLHttpRequest.prototype.open;
                 XMLHttpRequest.prototype.open=function(method,url){
-                    this._spBlocked=isAdVideoUrl(url);
+                    this._spBlocked=!isShortsPage()&&isAdVideoUrl(url);
                     return nativeXHROpen.apply(this,arguments);
                 };
                 var nativeXHRSend=XMLHttpRequest.prototype.send;
@@ -497,6 +499,7 @@ impl TabManager {
                             if(window.__sp_adskip_fallback) return;
                             window.__sp_adskip_fallback = true;
                             setInterval(function(){
+                                if(location.pathname.startsWith('/shorts/')) return;
                                 // Click skip buttons
                                 var skipBtn = document.querySelector('.ytp-ad-skip-button-slot button,button.ytp-ad-skip-button,button.ytp-ad-skip-button-modern,.ytp-skip-ad-button,[class*="skip-button"]');
                                 if(skipBtn && skipBtn.offsetParent !== null){ skipBtn.click(); return; }

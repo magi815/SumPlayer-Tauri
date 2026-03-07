@@ -1,11 +1,11 @@
 {
-  "version": "1.0.13",
-  "notes": "Fix update restart infinite loop",
-  "pub_date": "2026-03-08T23:00:00Z",
+  "version": "1.0.14",
+  "notes": "Fix Shorts infinite loading caused by ad blocker",
+  "pub_date": "2026-03-08T23:30:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUldTZUFreStEbzlDSnM0c2NpQWx1eVUvd2VRWEJTbXRIMndxVUs0VHAxdVp2VHBEaVNwNDhhNWw5OHMzbk9wNnprcUxraUtaVGlCVy9vQmtBakRKUDRHSnpNbVBFeFVuUVFvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzcyOTE0NTg0CWZpbGU6U3VtUGxheWVyXzEuMC4xM194NjQtc2V0dXAuZXhlCjJISHl4bVNRV0ZQeGRpQUcrZFArVXZHbW1Yd0YrNTYwcjZWZE4wRVpKbEdXS3IvZm5Keno4dGNSU1NpU3NHdm1OWTd5UUtCRlFxUGxra1ZaQzdzSUNRPT0K",
-      "url": "https://github.com/magi815/SumPlayer-Tauri/releases/download/v1.0.13/SumPlayer_1.0.13_x64-setup.exe"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUldTZUFreStEbzlDSm1qZi9UTmVmbWlsUDQxMWZsQlB0ZS9TSWdyTWVuaktncDc1MmthRTZOZEFEU3lheFdSQjFRSDltT3Qxa2YrZXZRRFFkVFhJUjlPKzhrOVJsWm03T1FJPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzcyOTE0OTExCWZpbGU6U3VtUGxheWVyXzEuMC4xNF94NjQtc2V0dXAuZXhlCjJ1TlZNaTF4L1NhT0VqZlVXejFRaXRhbkd0T3FUV1prTDFjU0cwM1ZtaUxCOFg0akVYNjJDVGZlZTFsdmZ3ck8wNUVUakxVTVhzMm1xMk05L1k4akNBPT0K",
+      "url": "https://github.com/magi815/SumPlayer-Tauri/releases/download/v1.0.14/SumPlayer_1.0.14_x64-setup.exe"
     }
   }
 }
