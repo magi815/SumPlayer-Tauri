@@ -1062,7 +1062,16 @@ fn main() {
                                 if confirmed {
                                     match update.download_and_install(|_, _| {}, || {}).await {
                                         Ok(_) => update_handle.restart(),
-                                        Err(_) => {} // don't restart if install failed
+                                        Err(e) => {
+                                            let err_msg = format!("업데이트 설치 실패:\n{}", e);
+                                            let _ = tokio::task::spawn_blocking(move || {
+                                                use windows::core::*;
+                                                use windows::Win32::UI::WindowsAndMessaging::*;
+                                                let title = w!("SumPlayer 업데이트 오류");
+                                                let msg_wide: Vec<u16> = err_msg.encode_utf16().chain(std::iter::once(0)).collect();
+                                                unsafe { MessageBoxW(None, PCWSTR(msg_wide.as_ptr()), title, MB_OK | MB_ICONERROR | MB_TOPMOST); }
+                                            }).await;
+                                        }
                                     }
                                 }
                             }
