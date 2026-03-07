@@ -1060,11 +1060,9 @@ fn main() {
                                     result == MESSAGEBOX_RESULT(1) // IDOK = 1
                                 }).await.unwrap_or(false);
                                 if confirmed {
-                                    if let Ok(upd) = update_handle.updater() {
-                                        if let Ok(Some(update)) = upd.check().await {
-                                            let _ = update.download_and_install(|_, _| {}, || {}).await;
-                                            update_handle.restart();
-                                        }
+                                    match update.download_and_install(|_, _| {}, || {}).await {
+                                        Ok(_) => update_handle.restart(),
+                                        Err(_) => {} // don't restart if install failed
                                     }
                                 }
                             }
