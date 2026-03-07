@@ -986,7 +986,8 @@ document.getElementById('title-bar').addEventListener('mousedown', (e) => {
 function reportChromeHeight() {
   const chrome = document.getElementById('browser-chrome');
   if (chrome && invoke) {
-    const height = chrome.offsetHeight;
+    const dpr = window.devicePixelRatio || 1;
+    const height = Math.round(chrome.offsetHeight * dpr);
     api.setChromeHeight(height).catch(() => {});
   }
 }
