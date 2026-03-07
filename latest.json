@@ -1,11 +1,11 @@
 {
-  "version": "1.0.0",
-  "notes": "Initial release",
-  "pub_date": "2026-03-07T17:23:22Z",
+  "version": "1.0.1",
+  "notes": "Fix address bar clipped on high-DPI displays",
+  "pub_date": "2026-03-07T17:42:21Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZUFreStEbzlDSnMzZmxhVlZteUIyNTNzZU9ab2tleW9rYSs4MG1ucU5nN05PVi9xd2dERVlNaFBzUTVHeXMzbUt1RVJhbFU5aVBuMkNIWlJ2RTlRL3JxbE45Ump5QUFFPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzcyOTA0MTc0CWZpbGU6U3VtUGxheWVyXzEuMC4wX3g2NC1zZXR1cC5leGUKTVNIQ1luY3NKTnE2YzQ5VHA4UjNaTmpZMW9pbUNyYWgxUDlDeFpPUGVpUllEamRONTQ4OXV4aFhrT1gwelhuWjhmNFJjYUhzdWxQUEhDRW85VXFFQ2c9PQo=",
-      "url": "https://github.com/magi815/SumPlayer-Tauri/releases/download/v1.0.0/SumPlayer_1.0.0_x64-setup.exe"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZUFreStEbzlDSm5nOXpXWWhWUmo3TTNPZHdIR0RLUnVsZ1FQNU1jTExRU1ZzMkpWOEhEL3NQRzFVWXRZaEhxYVJlR0p1MG9oRXJtUnhnYVRPdVU1WkxmZlJmQmZCNFE4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzcyOTA1MzMzCWZpbGU6U3VtUGxheWVyXzEuMC4xX3g2NC1zZXR1cC5leGUKQkl6WGVqNDhvS3NiaFFqV09VN0VrWkJUQW4xNk91ZmhIRU51TG53Ky9SdDJjeTJ1Y1ZhTEhJZ3ZIb0Q5bE0wOG1EQUp0Nm1wUmcrTHVYUVZFazhVQlE9PQo=",
+      "url": "https://github.com/magi815/SumPlayer-Tauri/releases/download/v1.0.1/SumPlayer_1.0.1_x64-setup.exe"
     }
   }
 }
