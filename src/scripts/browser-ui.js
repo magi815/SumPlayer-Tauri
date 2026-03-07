@@ -51,22 +51,25 @@ function tryLoadTauriApi() {
 
 tryLoadTauriApi();
 
-// Helper: show overlay and wait for it to be ready before emitting an event
+// Helper: show overlay and emit event with retry to handle race condition
+// The overlay webview may not have its listeners ready yet, so we retry
 function showOverlayAndEmit(eventName, payloadFn) {
   api.showMenuOverlay().then(() => {
-    let resolved = false;
     const tauriEvent = window.__TAURI__ && window.__TAURI__.event;
     if (!tauriEvent) return;
-    const doEmit = () => {
-      if (resolved) return;
-      resolved = true;
-      tauriEvent.emit(eventName, payloadFn());
-    };
-    tauriEvent.listen('overlay-ready', () => doEmit()).then(unlisten => {
-      setTimeout(() => { unlisten(); }, 3000);
-    });
-    // Fallback timeout
-    setTimeout(() => doEmit(), 500);
+    const payload = payloadFn();
+    let done = false;
+    // Listen for overlay-ready (fires after overlay sets up listeners)
+    tauriEvent.listen('overlay-ready', () => {
+      if (!done) { done = true; tauriEvent.emit(eventName, payload); }
+    }).then(unlisten => { setTimeout(() => unlisten(), 3000); });
+    // Retry emit every 100ms to handle already-initialized overlay
+    let attempts = 0;
+    const retry = setInterval(() => {
+      tauriEvent.emit(eventName, payload);
+      attempts++;
+      if (attempts >= 10 || done) clearInterval(retry);
+    }, 100);
   });
 }
 
@@ -925,6 +928,29 @@ function registerEventHandlers() {
       api.setHomePage(payload);
     } else if (action === 'navigate') {
       api.navigate(payload);
+    }
+  });
+
+  // Auto-update status toast
+  onEvent('update-status', (data) => {
+    if (data.status === 'up-to-date') return;
+    var msg = '';
+    if (data.status === 'checking') msg = '업데이트 확인 중...';
+    else if (data.status === 'downloading') msg = '업데이트 다운로드 중 (v' + data.version + ')...';
+    else if (data.status === 'installed') msg = '업데이트 설치 완료 (v' + data.version + '). 재시작합니다...';
+    else if (data.status === 'error') msg = '업데이트 오류: ' + data.message;
+    if (!msg) return;
+    var toast = document.getElementById('update-toast');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.id = 'update-toast';
+      toast.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#2c2d32;color:#e4e5e9;padding:10px 16px;border-radius:8px;font-size:13px;z-index:999999;box-shadow:0 4px 12px rgba(0,0,0,0.3);border:1px solid rgba(255,255,255,0.06);transition:opacity 0.3s;';
+      document.body.appendChild(toast);
+    }
+    toast.textContent = msg;
+    toast.style.opacity = '1';
+    if (data.status === 'error') {
+      setTimeout(function() { toast.style.opacity = '0'; setTimeout(function() { toast.remove(); }, 300); }, 5000);
     }
   });
 

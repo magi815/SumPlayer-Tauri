@@ -254,26 +254,25 @@ function initOverlay() {
   listen = window.__TAURI__.event.listen;
   emit = window.__TAURI__.event.emit;
   invoke = window.__TAURI__.core.invoke;
-  emit('overlay-ready', {});
   return true;
 }
 
 if (!initOverlay()) {
-  // Retry until __TAURI__ is available, with a hard timeout to auto-close
   let retries = 0;
   const retryInterval = setInterval(() => {
     retries++;
     if (initOverlay()) {
       clearInterval(retryInterval);
       setupListeners();
-    } else if (retries > 30) { // 1.5s max wait
+      emit('overlay-ready', {});
+    } else if (retries > 30) {
       clearInterval(retryInterval);
-      // __TAURI__ never loaded - close overlay via webview close
       try { window.close(); } catch(e) {}
     }
   }, 50);
 } else {
   setupListeners();
+  emit('overlay-ready', {});
 }
 
 // Click outside to close - always register regardless of __TAURI__ state

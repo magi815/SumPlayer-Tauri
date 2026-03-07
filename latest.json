@@ -1,11 +1,11 @@
 {
-  "version": "1.0.3",
-  "notes": "Default bookmarks, fix menu overlay on some computers",
-  "pub_date": "2026-03-08T13:00:00Z",
+  "version": "1.0.4",
+  "notes": "Auto-update status display, fix menu overlay race condition, silent installer upgrade",
+  "pub_date": "2026-03-08T14:00:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUldTZUFreStEbzlDSmhqdlRMaFd5clM4eG1pZDhhdDczSmljNnhyZVdMSitoRCtBSStac25sYUtuVXF3YlFEMlhWeHV3eVhLRTlSbjhXMXpSOTRFNkxMZTFhY1BVSXdDRVEwPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzcyOTA3MDUzCWZpbGU6U3VtUGxheWVyXzEuMC4zX3g2NC1zZXR1cC5leGUKQXNpMS9JM0lsaFBlbytHRmxHRGtVWTcxVGs1RHJRM3RRU2Y3dDE1WGNhbE5iV1NGRXlmbFl5Qk1HRVo5cERwaEUvK3BFcFBFdHNrZ2xGVlJLK3FDREE9PQo=",
-      "url": "https://github.com/magi815/SumPlayer-Tauri/releases/download/v1.0.3/SumPlayer_1.0.3_x64-setup.exe"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZUFreStEbzlDSm5IZHZROXIzMWE2U2dmY09ZQXRVbTRRaW9JaGk2K3ZvMTE1cmRFNDFHalpGL0hIQy9QMk9CRmxTd1h2SXVibmhoRERtUi9va3N1TXR3T1pCNnpkWndrPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzcyOTA4MTI3CWZpbGU6U3VtUGxheWVyXzEuMC40X3g2NC1zZXR1cC5leGUKQ2crc1hkZlJVaXRIWm42ZHZqcmNCOFBJMnRUZFdEdVRNQkRTdHh6V1JBL0dRdVB6M2xjUWxWdVJBRzJXZHJOR0VMVEdIbklkYU1sbmRvd0J6UldkQVE9PQo=",
+      "url": "https://github.com/magi815/SumPlayer-Tauri/releases/download/v1.0.4/SumPlayer_1.0.4_x64-setup.exe"
     }
   }
 }
