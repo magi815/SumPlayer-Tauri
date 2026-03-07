@@ -1,11 +1,11 @@
 {
-  "version": "1.0.6",
-  "notes": "Auto-skip YouTube sponsor interstitial ads",
-  "pub_date": "2026-03-08T16:00:00Z",
+  "version": "1.0.7",
+  "notes": "Update dialog position fix (top center)",
+  "pub_date": "2026-03-08T17:00:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZUFreStEbzlDSnNMRU5lMU9adUJqVE1tcWFOZmNtOHhXUm50UGsxam9ZbE1XQVBEalRNakVUYmZzYjNCbFZNbm13MUovbmlEV1krbmdSbXduTCtZbm1nZVNGSG1BVlFrPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzcyOTEwMTI3CWZpbGU6U3VtUGxheWVyXzEuMC42X3g2NC1zZXR1cC5leGUKY2xIK1lvTjhBV3NZMmdkS2lndGpMRFd2Y0hsd1hXbm5EbldJQm5uc2JZR2lDL2ZkallqYllKNU52cGtFNnArVkJFN0xIQnA1UUtld3N6cmZOcm1xQmc9PQo=",
-      "url": "https://github.com/magi815/SumPlayer-Tauri/releases/download/v1.0.6/SumPlayer_1.0.6_x64-setup.exe"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZUFreStEbzlDSnJMQTdTMlRLTkxkbmZPT0tMSk1JTTU4T2ViNGhKbFNtbU5LNnBTcFYvRGljOVR3OWRQMWx1L1dIZUFpZitJVHkySk9wWmFaZi9Vbm41K0drMnhQTlFnPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzcyOTEwODI0CWZpbGU6U3VtUGxheWVyXzEuMC43X3g2NC1zZXR1cC5leGUKcHpHdVBGazNIY0hTdlJYNGtoR2hpWXV1TVVqOHlDWWV2U29jMnFlQVU0aG1XaWpqajRoVzJvMjI5VlE1SytXeFJLVDQxei9SZHl1dEU0aGxQNlBEQ0E9PQo=",
+      "url": "https://github.com/magi815/SumPlayer-Tauri/releases/download/v1.0.7/SumPlayer_1.0.7_x64-setup.exe"
     }
   }
 }
