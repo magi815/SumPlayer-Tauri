@@ -290,7 +290,7 @@ impl TabManager {
                 window.__sp_iife_phase=4;
                 // Layer 5: CSS hiding
                 var style=document.createElement('style');
-                style.textContent='.ytp-ad-module,.ytp-ad-overlay-container,.ytp-ad-message-container,.ytp-ad-preview-container,.ytp-ad-skip-button-container,.ytp-ad-text,.ytp-ad-image-overlay,.video-ads,#player-ads,ytd-action-companion-ad-renderer,ytd-banner-promo-renderer,ytd-statement-banner-renderer,ytd-primetime-promo-renderer,ytd-mealbar-promo-renderer,#masthead-ad,ytd-enforcement-message-view-model{display:none!important}';
+                style.textContent='.ytp-ad-module,.ytp-ad-overlay-container,.ytp-ad-message-container,.ytp-ad-preview-container,.ytp-ad-skip-button-container,.ytp-ad-text,.ytp-ad-image-overlay,.video-ads,#player-ads,ytd-action-companion-ad-renderer,ytd-banner-promo-renderer,ytd-statement-banner-renderer,ytd-primetime-promo-renderer,ytd-mealbar-promo-renderer,#masthead-ad,ytd-enforcement-message-view-model,yt-notification-action-renderer,tp-yt-paper-toast.style-scope.yt-notification-action-renderer{display:none!important}';
                 var target=document.head||document.documentElement;
                 if(target){target.appendChild(style);}
                 else{document.addEventListener('DOMContentLoaded',function(){(document.head||document.documentElement).appendChild(style);});}
@@ -529,25 +529,38 @@ impl TabManager {
                         let adskip_fallback_js = r#"(function(){
                             if(window.__sp_adskip_fallback) return;
                             window.__sp_adskip_fallback = true;
+                            function showSkipMsg(show){
+                                var el=document.getElementById('__sp_skip_msg');
+                                if(show&&!el){
+                                    el=document.createElement('div');
+                                    el.id='__sp_skip_msg';
+                                    el.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2147483647;background:rgba(0,0,0,0.75);color:#fff;padding:14px 28px;border-radius:12px;font-size:15px;font-weight:600;font-family:-apple-system,BlinkMacSystemFont,sans-serif;pointer-events:none;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 4px 20px rgba(0,0,0,0.4);';
+                                    el.textContent='\u26A1 \uAD11\uACE0 \uC2A4\uD0B5\uC911...';
+                                    document.body.appendChild(el);
+                                } else if(!show&&el){
+                                    el.remove();
+                                }
+                            }
                             setInterval(function(){
                                 if(location.pathname.startsWith('/shorts/')) return;
+                                var adShowing=document.querySelector('.ad-showing,.ad-interrupting');
                                 // Click skip buttons (only inside video player)
                                 var player = document.querySelector('.html5-video-player');
-                                if(!player) return;
+                                if(!player){showSkipMsg(false);return;}
+                                if(!adShowing){showSkipMsg(false);return;}
+                                showSkipMsg(true);
                                 var skipBtn = player.querySelector('.ytp-ad-skip-button-slot button,button.ytp-ad-skip-button,button.ytp-ad-skip-button-modern,.ytp-skip-ad-button,[class*="skip-button"]');
                                 if(skipBtn && skipBtn.offsetParent !== null){ skipBtn.click(); return; }
-                                if(document.querySelector('.ad-showing,.ad-interrupting')){
-                                    var btns = player.querySelectorAll('button');
-                                    for(var i=0;i<btns.length;i++){
-                                        var txt=btns[i].textContent.trim();
-                                        if((txt.indexOf('건너뛰기')!==-1||txt.indexOf('Skip')!==-1)&&btns[i].offsetParent!==null){
-                                            btns[i].click();return;
-                                        }
+                                var btns = player.querySelectorAll('button');
+                                for(var i=0;i<btns.length;i++){
+                                    var txt=btns[i].textContent.trim();
+                                    if((txt.indexOf('건너뛰기')!==-1||txt.indexOf('Skip')!==-1)&&btns[i].offsetParent!==null){
+                                        btns[i].click();return;
                                     }
-                                    // Fast-forward any playing ad
-                                    var v = player.querySelector('video');
-                                    if(v){v.muted=true;if(v.duration>0)v.currentTime=v.duration;}
                                 }
+                                // Fast-forward any playing ad
+                                var v = player.querySelector('video');
+                                if(v){v.muted=true;if(v.duration>0)v.currentTime=v.duration;}
                             }, 500);
                         })()"#;
                         let _ = webview.eval(adskip_fallback_js);
