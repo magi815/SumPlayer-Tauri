@@ -1,6 +1,6 @@
 [package]
 name = "sumplayer-tauri"
-version = "1.0.19"
+version = "1.0.20"
 edition = "2021"
 
 [build-dependencies]
