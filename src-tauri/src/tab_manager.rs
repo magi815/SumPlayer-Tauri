@@ -558,7 +558,7 @@ impl TabManager {
                         })()"#;
                         let _ = webview.eval(adskip_fallback_js);
 
-                        // Sponsor ad scan fallback (in case initialization_script interval fails)
+                        // Sponsor ad scan: immediate + MutationObserver + backup interval
                         let sponsor_scan_js = r#"(function(){
                             if(window.__sp_sponsor_scan) return;
                             window.__sp_sponsor_scan = true;
@@ -585,12 +585,25 @@ impl TabManager {
                                 }
                                 return false;
                             }
-                            setInterval(function(){
+                            function spScanAll(){
                                 var items=document.querySelectorAll('ytd-rich-item-renderer');
                                 for(var i=0;i<items.length;i++){
                                     if(spIsSponsor(items[i])) spMark(items[i]);
                                 }
-                            },3000);
+                            }
+                            spScanAll();
+                            var spObs=new MutationObserver(function(muts){
+                                for(var m=0;m<muts.length;m++){
+                                    for(var n=0;n<muts[m].addedNodes.length;n++){
+                                        var node=muts[m].addedNodes[n];
+                                        if(!(node instanceof HTMLElement)) continue;
+                                        if(node.matches&&node.matches('ytd-rich-item-renderer')){if(spIsSponsor(node)) spMark(node);}
+                                        else if(node.querySelector){var si=node.querySelectorAll('ytd-rich-item-renderer');for(var i=0;i<si.length;i++){if(spIsSponsor(si[i])) spMark(si[i]);}}
+                                    }
+                                }
+                            });
+                            spObs.observe(document.documentElement,{childList:true,subtree:true});
+                            setInterval(spScanAll,5000);
                         })()"#;
                         let _ = webview.eval(sponsor_scan_js);
                     }
