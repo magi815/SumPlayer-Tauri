@@ -189,6 +189,7 @@ const findPrev = document.getElementById('find-prev');
 const findNext = document.getElementById('find-next');
 const findClose = document.getElementById('find-close');
 const bookmarkBar = document.getElementById('bookmark-bar');
+const bookmarkHome = document.getElementById('bookmark-home');
 const bookmarkItems = document.getElementById('bookmark-items');
 const panelOverlay = document.getElementById('panel-overlay');
 const panelTitle = document.getElementById('panel-title');
@@ -490,13 +491,17 @@ async function loadDownloads() {
 
 // ─── Bookmark bar ───
 
+bookmarkHome.addEventListener('click', () => api.createTab('https://www.youtube.com'));
+
+let _bmDragId = null;
+
 async function refreshBookmarkBar() {
   const bookmarks = await api.bookmarkList('');
   bookmarkItems.innerHTML = '';
 
   if (bookmarks.length > 0) {
     for (const bm of bookmarks) {
-      const item = document.createElement('button');
+      const item = document.createElement('div');
       item.className = 'bookmark-item';
       item.title = bm.url;
 
@@ -536,15 +541,19 @@ async function refreshBookmarkBar() {
       item.draggable = true;
 
       item.addEventListener('dragstart', (e) => {
-        e.dataTransfer.setData('text/bookmark-id', bm.id);
+        _bmDragId = bm.id;
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', bm.id);
         item.classList.add('dragging');
       });
       item.addEventListener('dragend', () => {
+        _bmDragId = null;
         item.classList.remove('dragging');
         bookmarkItems.querySelectorAll('.bookmark-item.drag-over').forEach(el => el.classList.remove('drag-over'));
       });
       item.addEventListener('dragover', (e) => {
         e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
         item.classList.add('drag-over');
       });
       item.addEventListener('dragleave', () => {
@@ -552,10 +561,11 @@ async function refreshBookmarkBar() {
       });
       item.addEventListener('drop', async (e) => {
         e.preventDefault();
+        e.stopPropagation();
         item.classList.remove('drag-over');
-        const draggedId = e.dataTransfer.getData('text/bookmark-id');
-        if (draggedId && draggedId !== bm.id) {
-          await api.bookmarkMove(draggedId, bm.id);
+        if (_bmDragId && _bmDragId !== bm.id) {
+          await api.bookmarkMove(_bmDragId, bm.id);
+          _bmDragId = null;
           refreshBookmarkBar();
         }
       });
@@ -639,7 +649,7 @@ const menuItems = [
   { label: '스크린샷', action: 'menu-screenshot', icon: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1.5"/><circle cx="8" cy="8.5" r="2.5"/><path d="M5.5 3L6.5 1.5h3L10.5 3"/></svg>' },
   { label: '개발자 도구', action: 'menu-devtools', icon: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4L1.5 8 5 12M11 4l3.5 4L11 12M9.5 2l-3 12"/></svg>' },
   { type: 'divider' },
-  { type: 'version', label: 'SumPlayer v1.0.21' },
+  { type: 'version', label: 'SumPlayer v1.0.22' },
 ];
 
 function openMenu() {
@@ -962,12 +972,12 @@ api.getControlServerStatus().then(active => {
 }).catch(() => {});
 
 // Bookmark bar drop on empty area
-bookmarkItems.addEventListener('dragover', (e) => { e.preventDefault(); });
+bookmarkItems.addEventListener('dragover', (e) => { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; });
 bookmarkItems.addEventListener('drop', async (e) => {
-  const draggedId = e.dataTransfer.getData('text/bookmark-id');
-  if (draggedId && e.target === bookmarkItems) {
-    e.preventDefault();
-    await api.bookmarkMove(draggedId, null);
+  e.preventDefault();
+  if (_bmDragId && (e.target === bookmarkItems || e.target.id === 'bookmark-bar-empty')) {
+    await api.bookmarkMove(_bmDragId, null);
+    _bmDragId = null;
     refreshBookmarkBar();
   }
 });

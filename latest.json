@@ -1,11 +1,11 @@
 {
-  "version": "1.0.21",
-  "notes": "Installer language matches OS locale",
+  "version": "1.0.22",
+  "notes": "Fixed bookmark drag-and-drop, added home button",
   "pub_date": "2026-03-09T00:00:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZUFreStEbzlDSnNYOTFjVkFYRnNLME41RjB1YVdYWjBuNWhvYzVvenJoZnUrZXZGOFB3ZFNlL3QyZEdQYWp3NER5SWtxc2tiOFFhRFhBSElGWEJvVTNvbFQwU1pFNlEwPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzcyOTUyMDM0CWZpbGU6U3VtUGxheWVyXzEuMC4yMV94NjQtc2V0dXAuZXhlCkVCOFhBaVNxdFVEcTJlTmg1L3hjMlkxQVRjVzA3NmZkTnRCSGswc3JiT3lUTWs4TUc0aSthMVJ0a01ZaHNvT1VjQWJ3WE4vbGd2ci9YNTRlUDFNc0JBPT0K",
-      "url": "https://github.com/magi815/SumPlayer-Tauri/releases/download/v1.0.21/SumPlayer_1.0.21_x64-setup.exe"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZUFreStEbzlDSm1qUk9JaFpXR1pIV0ppSGNUM0tZeXNkTlZNbmQwenJib09ubzVnZURUc1RqWFFsTUhmcTJ4bWp5UUJhWU4xM1crK1VPWndWZzJLd3FvWVVFZWkxZ1FNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzcyOTUyNjQ2CWZpbGU6U3VtUGxheWVyXzEuMC4yMl94NjQtc2V0dXAuZXhlCmdMSTN6V2g2NFlDb1hyMkwyVFkwMXFDODFYMTJwdDZWWjFGMlpiTUFMOGxtNWY5RE9qREVaak9YT3ZrWDdEcy9rTEtHSDl0NkJpL2xzQWVJU3ZKMEJBPT0K",
+      "url": "https://github.com/magi815/SumPlayer-Tauri/releases/download/v1.0.22/SumPlayer_1.0.22_x64-setup.exe"
     }
   }
 }
