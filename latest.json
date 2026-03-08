@@ -1,11 +1,11 @@
 {
-  "version": "1.0.20",
-  "notes": "Fix ad skip overlay trigger to detect video loading state",
+  "version": "1.0.21",
+  "notes": "Installer language matches OS locale",
   "pub_date": "2026-03-09T00:00:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZUFreStEbzlDSnY0ZXVCWGdnQVFhOEpwZ3pLNFZ0Yms2ZTFzd056N2NLalBzQllYcGh5Mmpidlphb0JJTGNBU2RSRDhqVE9HVmdlYmxacHN4VTFDS0wySEVOQzZ2TEFzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzcyOTQ5NTQ1CWZpbGU6U3VtUGxheWVyXzEuMC4yMF94NjQtc2V0dXAuZXhlCnpyNVBvbmpiRC9jS1BGQlozemh1L2svTDBsTytQUHlmRUZnVDVsdGlJWTdQMWdyTjdBaDN6MHZvMUcrUzdwcE9JZ0Z6STVtN3diWEpITk5BSHIyRkFnPT0K",
-      "url": "https://github.com/magi815/SumPlayer-Tauri/releases/download/v1.0.20/SumPlayer_1.0.20_x64-setup.exe"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZUFreStEbzlDSnNYOTFjVkFYRnNLME41RjB1YVdYWjBuNWhvYzVvenJoZnUrZXZGOFB3ZFNlL3QyZEdQYWp3NER5SWtxc2tiOFFhRFhBSElGWEJvVTNvbFQwU1pFNlEwPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzcyOTUyMDM0CWZpbGU6U3VtUGxheWVyXzEuMC4yMV94NjQtc2V0dXAuZXhlCkVCOFhBaVNxdFVEcTJlTmg1L3hjMlkxQVRjVzA3NmZkTnRCSGswc3JiT3lUTWs4TUc0aSthMVJ0a01ZaHNvT1VjQWJ3WE4vbGd2ci9YNTRlUDFNc0JBPT0K",
+      "url": "https://github.com/magi815/SumPlayer-Tauri/releases/download/v1.0.21/SumPlayer_1.0.21_x64-setup.exe"
     }
   }
 }
