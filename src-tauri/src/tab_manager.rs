@@ -287,6 +287,7 @@ impl TabManager {
                     return origOpen.apply(this,arguments);
                 };
 
+                window.__sp_iife_phase=4;
                 // Layer 5: CSS hiding
                 var style=document.createElement('style');
                 style.textContent='.ytp-ad-module,.ytp-ad-overlay-container,.ytp-ad-message-container,.ytp-ad-preview-container,.ytp-ad-skip-button-container,.ytp-ad-text,.ytp-ad-image-overlay,.video-ads,#player-ads,ytd-action-companion-ad-renderer,ytd-banner-promo-renderer,ytd-statement-banner-renderer,ytd-primetime-promo-renderer,ytd-mealbar-promo-renderer,#masthead-ad,ytd-enforcement-message-view-model{display:none!important}';
@@ -294,6 +295,7 @@ impl TabManager {
                 if(target){target.appendChild(style);}
                 else{document.addEventListener('DOMContentLoaded',function(){(document.head||document.documentElement).appendChild(style);});}
 
+                window.__sp_iife_phase=5;
                 // Layer 6: MutationObserver for enforcement popups
                 var obs=new MutationObserver(function(mutations){
                     for(var m=0;m<mutations.length;m++){
@@ -327,7 +329,9 @@ impl TabManager {
                         scanSponsorAds();
                     });
                 });
+                window.__sp_iife_phase=6;
                 setInterval(scanSponsorAds,3000);
+                window.__sp_iife_phase=7;
             })()"#;
 
             let builder = tauri::webview::WebviewBuilder::new(
@@ -533,26 +537,62 @@ impl TabManager {
                             window.__sp_adskip_fallback = true;
                             setInterval(function(){
                                 if(location.pathname.startsWith('/shorts/')) return;
-                                // Click skip buttons
-                                var skipBtn = document.querySelector('.ytp-ad-skip-button-slot button,button.ytp-ad-skip-button,button.ytp-ad-skip-button-modern,.ytp-skip-ad-button,[class*="skip-button"]');
+                                // Click skip buttons (only inside video player)
+                                var player = document.querySelector('.html5-video-player');
+                                if(!player) return;
+                                var skipBtn = player.querySelector('.ytp-ad-skip-button-slot button,button.ytp-ad-skip-button,button.ytp-ad-skip-button-modern,.ytp-skip-ad-button,[class*="skip-button"]');
                                 if(skipBtn && skipBtn.offsetParent !== null){ skipBtn.click(); return; }
-                                var btns = document.querySelectorAll('button');
-                                for(var i=0;i<btns.length;i++){
-                                    var txt=btns[i].textContent.trim();
-                                    if((txt.indexOf('건너뛰기')!==-1||txt.indexOf('Skip')!==-1)&&btns[i].offsetParent!==null){
-                                        var p=btns[i].closest('.ytp-ad-module,.ytp-ad-player-overlay,[class*="ad-"]');
-                                        if(p||document.querySelector('.ad-showing,.ad-interrupting')){btns[i].click();return;}
+                                if(document.querySelector('.ad-showing,.ad-interrupting')){
+                                    var btns = player.querySelectorAll('button');
+                                    for(var i=0;i<btns.length;i++){
+                                        var txt=btns[i].textContent.trim();
+                                        if((txt.indexOf('건너뛰기')!==-1||txt.indexOf('Skip')!==-1)&&btns[i].offsetParent!==null){
+                                            btns[i].click();return;
+                                        }
                                     }
-                                }
-                                // Fast-forward any playing ad
-                                var adShowing=document.querySelector('.ad-showing,.ad-interrupting');
-                                if(adShowing){
-                                    var v=document.querySelector('video');
+                                    // Fast-forward any playing ad
+                                    var v = player.querySelector('video');
                                     if(v){v.muted=true;if(v.duration>0)v.currentTime=v.duration;}
                                 }
                             }, 500);
                         })()"#;
                         let _ = webview.eval(adskip_fallback_js);
+
+                        // Sponsor ad scan fallback (in case initialization_script interval fails)
+                        let sponsor_scan_js = r#"(function(){
+                            if(window.__sp_sponsor_scan) return;
+                            window.__sp_sponsor_scan = true;
+                            var SPONSOR_TEXTS=['스폰서','Sponsored','Sponsorisé','Gesponsert','Sponsorizzato','Patrocinado'];
+                            function spMark(c){
+                                try{
+                                if(c.__sp_ad_marked) return;
+                                c.__sp_ad_marked=true;
+                                while(c.firstChild) c.removeChild(c.firstChild);
+                                c.style.cssText='display:flex!important;align-items:center;justify-content:center;background:rgba(25,25,25,0.7);border-radius:12px;min-height:0;opacity:0.35;';
+                                var l=document.createElement('span');
+                                l.textContent='ad';
+                                l.style.cssText='color:#666;font-size:16px;font-weight:700;font-family:-apple-system,sans-serif;letter-spacing:2px;text-transform:uppercase;';
+                                c.appendChild(l);
+                                }catch(e){}
+                            }
+                            function spIsSponsor(el){
+                                if(el.__sp_ad_marked) return false;
+                                if(el.querySelector('ad-badge-view-model,badge-shape.yt-badge-shape--ad')) return true;
+                                var badges=el.querySelectorAll('badge-shape,[class*="badge"],ytd-badge-supported-renderer');
+                                for(var i=0;i<badges.length;i++){
+                                    var txt=(badges[i].textContent||'').trim();
+                                    for(var j=0;j<SPONSOR_TEXTS.length;j++){if(txt===SPONSOR_TEXTS[j]) return true;}
+                                }
+                                return false;
+                            }
+                            setInterval(function(){
+                                var items=document.querySelectorAll('ytd-rich-item-renderer');
+                                for(var i=0;i<items.length;i++){
+                                    if(spIsSponsor(items[i])) spMark(items[i]);
+                                }
+                            },3000);
+                        })()"#;
+                        let _ = webview.eval(sponsor_scan_js);
                     }
 
                     // Emit navigation event to frontend

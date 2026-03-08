@@ -1,11 +1,11 @@
 {
-  "version": "1.0.17",
-  "notes": "Fix sponsor ad TrustedHTML error, improved badge detection",
+  "version": "1.0.18",
+  "notes": "Fix popup/menu dismissal (ad skip clicking wrong button), fix sponsor ad scanning",
   "pub_date": "2026-03-09T00:00:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUldTZUFreStEbzlDSmtXQjFDbmF3T0c3VzhpUjlqVTZaSVBIckhTWmZVZEpWZDhwNnRsOUtSZnk1cHc4d24wRkxOcDRiUDN4Yy8xREkvSFNqckJwTldmVkY4OHZxd0JOb2dBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzcyOTQzOTI1CWZpbGU6U3VtUGxheWVyXzEuMC4xN194NjQtc2V0dXAuZXhlClhuY2Q2ekJkVldTczF5TmVKL3BvWU9xUWk2eUVwVHJXZ2pVWTZKcWxnR3A1eGN6ZkhHS080QVdzc3U4Y3V5QmhwRHRFemlxRUs0ZW8wUkhPUXhSbENBPT0K",
-      "url": "https://github.com/magi815/SumPlayer-Tauri/releases/download/v1.0.17/SumPlayer_1.0.17_x64-setup.exe"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZUFreStEbzlDSnFjOUVDYWRxRlUwdkV4VlBpMi96a1VmcTlaeW9MckdydWdsWWZ6UStKRHk2N1ZQQmtmbTE1UlQwblc4QVZtU2VGeEJvYi9PVDFwUVhpZWM5RzgvaVF3PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzcyOTQ1MzY5CWZpbGU6U3VtUGxheWVyXzEuMC4xOF94NjQtc2V0dXAuZXhlCmtBcjIybEI1YTlheXluR3FSMGJDWEs3N2lUaFBHY09ieDJnV3Fvby8vWDBONWtNaExpbFhHazlOQjlrYXl1YWxDOFY3R0UySjM4U1k3dVJ5am4vSUNBPT0K",
+      "url": "https://github.com/magi815/SumPlayer-Tauri/releases/download/v1.0.18/SumPlayer_1.0.18_x64-setup.exe"
     }
   }
 }
