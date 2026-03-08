@@ -698,7 +698,7 @@ impl TabManager {
                         let top = self.chrome_height + self.extra_offset;
                         let _ = webview.set_position(tauri::PhysicalPosition::new(0i32, top as i32));
                         // Make visible by setting proper size
-                        let size_opt = app.get_webview_window("main")
+                        let size_opt = app.get_window("main")
                             .and_then(|win| win.inner_size().ok())
                             .or(self.last_window_size);
                         if let Some(size) = size_opt {
@@ -1106,7 +1106,7 @@ impl TabManager {
 
     pub fn resize_active_tab(&mut self, app: &AppHandle) {
         // Try get_webview_window first, fallback to stored size
-        let size_opt = if let Some(win) = app.get_webview_window("main") {
+        let size_opt = if let Some(win) = app.get_window("main") {
             win.inner_size().ok()
         } else {
             // Window lookup fails in async command context - use stored size

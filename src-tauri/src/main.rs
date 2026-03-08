@@ -388,7 +388,7 @@ async fn settings_set_home_page(
 
 #[tauri::command]
 async fn window_minimize(app: tauri::AppHandle) -> Result<(), String> {
-    if let Some(win) = app.get_webview_window("main") {
+    if let Some(win) = app.get_window("main") {
         win.minimize().map_err(|e| e.to_string())?;
     }
     Ok(())
@@ -396,7 +396,7 @@ async fn window_minimize(app: tauri::AppHandle) -> Result<(), String> {
 
 #[tauri::command]
 async fn window_maximize(app: tauri::AppHandle) -> Result<(), String> {
-    if let Some(win) = app.get_webview_window("main") {
+    if let Some(win) = app.get_window("main") {
         if win.is_maximized().unwrap_or(false) {
             win.unmaximize().map_err(|e| e.to_string())?;
         } else {
@@ -409,7 +409,7 @@ async fn window_maximize(app: tauri::AppHandle) -> Result<(), String> {
 #[tauri::command]
 async fn window_close(app: tauri::AppHandle, state: tauri::State<'_, AppState>) -> Result<(), String> {
     // Save state before closing
-    if let Some(win) = app.get_webview_window("main") {
+    if let Some(win) = app.get_window("main") {
         let wsm = state.window_state_manager.lock().await;
         if let Ok(pos) = win.outer_position() {
             if let Ok(size) = win.outer_size() {
@@ -433,7 +433,7 @@ async fn window_close(app: tauri::AppHandle, state: tauri::State<'_, AppState>) 
 
 #[tauri::command]
 async fn window_fullscreen(app: tauri::AppHandle) -> Result<(), String> {
-    if let Some(win) = app.get_webview_window("main") {
+    if let Some(win) = app.get_window("main") {
         let is_fullscreen = win.is_fullscreen().unwrap_or(false);
         win.set_fullscreen(!is_fullscreen)
             .map_err(|e| e.to_string())?;
@@ -983,7 +983,7 @@ fn main() {
         .setup(move |app| {
             // Restore window state from previous session
             let wsm = wsm_for_setup.clone();
-            if let Some(win) = app.get_webview_window("main") {
+            if let Some(win) = app.get_window("main") {
                 let state = wsm.blocking_lock().load();
                 if state.is_maximized {
                     if state.width > 0 && state.height > 0 {
