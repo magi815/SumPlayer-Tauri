@@ -123,26 +123,24 @@ impl TabManager {
                 var FEED_AD_SEL='ytd-ad-slot-renderer,ytd-in-feed-ad-layout-renderer,ytd-promoted-sparkles-web-renderer,ytd-promoted-video-renderer,ytd-display-ad-renderer';
                 var SPONSOR_TEXTS=['스폰서','Sponsored','Sponsorisé','Gesponsert','Sponsorizzato','Patrocinado'];
                 function markAdContainer(c){
+                    try{
                     if(c.__sp_ad_marked) return;
                     c.__sp_ad_marked=true;
-                    c.innerHTML='';
+                    while(c.firstChild) c.removeChild(c.firstChild);
                     c.style.cssText='display:flex!important;align-items:center;justify-content:center;background:rgba(25,25,25,0.7);border-radius:12px;min-height:0;opacity:0.35;';
                     var l=document.createElement('span');
                     l.textContent='ad';
                     l.style.cssText='color:#666;font-size:16px;font-weight:700;font-family:-apple-system,sans-serif;letter-spacing:2px;text-transform:uppercase;';
                     c.appendChild(l);
+                    }catch(e){}
                 }
                 function isSponsorAd(el){
                     if(el.__sp_ad_marked) return false;
-                    var badges=el.querySelectorAll('ytd-badge-supported-renderer,span.ytd-badge-supported-renderer,[class*="badge"],.badge');
+                    if(el.querySelector('ad-badge-view-model,badge-shape.yt-badge-shape--ad')) return true;
+                    var badges=el.querySelectorAll('badge-shape,[class*="badge"],ytd-badge-supported-renderer');
                     for(var i=0;i<badges.length;i++){
                         var txt=(badges[i].textContent||'').trim();
                         for(var j=0;j<SPONSOR_TEXTS.length;j++){if(txt===SPONSOR_TEXTS[j]) return true;}
-                    }
-                    var meta=el.querySelectorAll('#byline-container,#metadata-line,.ytd-video-meta-block,#channel-name');
-                    for(var i=0;i<meta.length;i++){
-                        var txt=(meta[i].textContent||'');
-                        for(var j=0;j<SPONSOR_TEXTS.length;j++){if(txt.indexOf(SPONSOR_TEXTS[j])!==-1) return true;}
                     }
                     return false;
                 }
