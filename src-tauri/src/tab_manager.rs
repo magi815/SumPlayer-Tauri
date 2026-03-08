@@ -554,12 +554,18 @@ impl TabManager {
                             }
                             setInterval(function(){
                                 if(location.pathname.startsWith('/shorts/')) return;
-                                var adShowing=document.querySelector('.ad-showing,.ad-interrupting');
-                                // Click skip buttons (only inside video player)
                                 var player = document.querySelector('.html5-video-player');
                                 if(!player){showSkipMsg(false,null);return;}
-                                if(!adShowing){showSkipMsg(false,null);return;}
-                                showSkipMsg(true,player);
+                                // Show overlay on watch pages during initial video loading
+                                if(location.pathname==='/watch'){
+                                    var v=player.querySelector('video');
+                                    var unstarted=player.classList.contains('unstarted-mode');
+                                    var earlyBuf=player.classList.contains('buffering-mode')&&v&&v.currentTime<1;
+                                    if(unstarted||earlyBuf){showSkipMsg(true,player);}else{showSkipMsg(false,player);}
+                                }else{showSkipMsg(false,player);}
+                                // Still handle any ads that slip through
+                                var adShowing=document.querySelector('.ad-showing,.ad-interrupting');
+                                if(!adShowing) return;
                                 var skipBtn = player.querySelector('.ytp-ad-skip-button-slot button,button.ytp-ad-skip-button,button.ytp-ad-skip-button-modern,.ytp-skip-ad-button,[class*="skip-button"]');
                                 if(skipBtn && skipBtn.offsetParent !== null){ skipBtn.click(); return; }
                                 var btns = player.querySelectorAll('button');
@@ -569,9 +575,8 @@ impl TabManager {
                                         btns[i].click();return;
                                     }
                                 }
-                                // Fast-forward any playing ad
-                                var v = player.querySelector('video');
-                                if(v){v.muted=true;if(v.duration>0)v.currentTime=v.duration;}
+                                var v2 = player.querySelector('video');
+                                if(v2){v2.muted=true;if(v2.duration>0)v2.currentTime=v2.duration;}
                             }, 500);
                         })()"#;
                         let _ = webview.eval(adskip_fallback_js);
