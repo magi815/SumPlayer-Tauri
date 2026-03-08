@@ -198,6 +198,8 @@ const panelSearch = document.getElementById('panel-search');
 const panelClear = document.getElementById('panel-clear');
 const panelContent = document.getElementById('panel-content');
 const btnBookmark = document.getElementById('btn-bookmark');
+const btnAdblock = document.getElementById('btn-adblock');
+const adblockBadge = document.getElementById('adblock-badge');
 const btnScreenshot = document.getElementById('btn-screenshot');
 const btnMenu = document.getElementById('btn-menu');
 const menuDropdown = document.getElementById('menu-dropdown');
@@ -649,7 +651,7 @@ const menuItems = [
   { label: '스크린샷', action: 'menu-screenshot', icon: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="12" height="10" rx="1.5"/><circle cx="8" cy="8.5" r="2.5"/><path d="M5.5 3L6.5 1.5h3L10.5 3"/></svg>' },
   { label: '개발자 도구', action: 'menu-devtools', icon: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4L1.5 8 5 12M11 4l3.5 4L11 12M9.5 2l-3 12"/></svg>' },
   { type: 'divider' },
-  { type: 'version', label: 'SumPlayer v1.0.22' },
+  { type: 'version', label: 'SumPlayer v1.0.23' },
 ];
 
 function openMenu() {
@@ -819,6 +821,22 @@ function registerEventHandlers() {
       urlInput.value = data.url;
       currentUrl = data.url;
       updateBookmarkStar();
+      // Reset ad block counter on navigation
+      adblockBadge.textContent = '0';
+      adblockBadge.classList.add('hidden');
+      btnAdblock.classList.remove('active');
+    }
+  });
+
+  onEvent('ad-block-count', (data) => {
+    const count = data.count || 0;
+    if (count > 0) {
+      adblockBadge.textContent = count > 99 ? '99+' : count;
+      adblockBadge.classList.remove('hidden');
+      btnAdblock.classList.add('active');
+    } else {
+      adblockBadge.classList.add('hidden');
+      btnAdblock.classList.remove('active');
     }
   });
 

@@ -254,32 +254,6 @@ impl TabManager {
                     });
                 };
 
-                // Layer 4: Block ad video streams
-                function isAdVideoUrl(u){return typeof u==='string'&&u.indexOf('googlevideo.com/videoplayback')!==-1&&/[?&]ctier=/.test(u);}
-                var nativeFetch=window.fetch;
-                window.fetch=function(input,init){
-                    var url=(typeof input==='string')?input:(input&&input.url?input.url:'');
-                    if(!isShortsPage()&&isAdVideoUrl(url)) return Promise.resolve(new Response('',{status:204}));
-                    return nativeFetch.call(this,input,init);
-                };
-                var nativeXHROpen=XMLHttpRequest.prototype.open;
-                XMLHttpRequest.prototype.open=function(method,url){
-                    this._spBlocked=!isShortsPage()&&isAdVideoUrl(url);
-                    return nativeXHROpen.apply(this,arguments);
-                };
-                var nativeXHRSend=XMLHttpRequest.prototype.send;
-                XMLHttpRequest.prototype.send=function(){
-                    if(this._spBlocked){
-                        Object.defineProperty(this,'readyState',{value:4});
-                        Object.defineProperty(this,'status',{value:204});
-                        Object.defineProperty(this,'responseText',{value:''});
-                        this.dispatchEvent(new Event('readystatechange'));
-                        this.dispatchEvent(new Event('load'));
-                        this.dispatchEvent(new Event('loadend'));
-                        return;
-                    }
-                    return nativeXHRSend.apply(this,arguments);
-                };
                 // Block window.open to ad URLs
                 var origOpen=window.open;
                 window.open=function(url){
@@ -525,10 +499,14 @@ impl TabManager {
                         })()"#;
                         let _ = webview.eval(shorts_js);
 
+                        // Reset ad block counter on every page load
+                        let _ = webview.eval("window.__sp_ads_stripped=0;window.__sp_ad_seen=new WeakSet();");
+
                         // Fallback: skip any ads that slip through the initialization script
                         let adskip_fallback_js = r#"(function(){
                             if(window.__sp_adskip_fallback) return;
                             window.__sp_adskip_fallback = true;
+                            var AD_EL_SEL='ytd-ad-slot-renderer,ytd-in-feed-ad-layout-renderer,ytd-promoted-sparkles-web-renderer,ytd-promoted-video-renderer,ytd-display-ad-renderer';
                             function showSkipMsg(show,player){
                                 var el=document.getElementById('__sp_skip_msg');
                                 if(show&&player&&!el){
@@ -552,20 +530,24 @@ impl TabManager {
                                     el.remove();
                                 }
                             }
+                            var _lastAdCount = -1;
+                            function _spResetCount(){window.__sp_ads_stripped=0;window.__sp_ad_seen=new WeakSet();_lastAdCount=-1;}
+                            document.addEventListener('yt-navigate-finish',_spResetCount);
+                            window.addEventListener('popstate',_spResetCount);
                             setInterval(function(){
+                                // Count DOM ad elements (feed ads hidden by CSS + sponsor ads marked by JS)
+                                var adEls=document.querySelectorAll(AD_EL_SEL);
+                                for(var a=0;a<adEls.length;a++){if(!window.__sp_ad_seen.has(adEls[a])){window.__sp_ad_seen.add(adEls[a]);window.__sp_ads_stripped++;}}
+                                var marked=document.querySelectorAll('ytd-rich-item-renderer');
+                                for(var a=0;a<marked.length;a++){if(marked[a].__sp_ad_marked&&!window.__sp_ad_seen.has(marked[a])){window.__sp_ad_seen.add(marked[a]);window.__sp_ads_stripped++;}}
+                                var c=window.__sp_ads_stripped;
+                                if(c!==_lastAdCount){_lastAdCount=c;try{if(window.__TAURI__)window.__TAURI__.event.emit('ad-block-count',{count:c});}catch(e){}}
                                 if(location.pathname.startsWith('/shorts/')) return;
                                 var player = document.querySelector('.html5-video-player');
                                 if(!player){showSkipMsg(false,null);return;}
-                                // Show overlay on watch pages during initial video loading
-                                if(location.pathname==='/watch'){
-                                    var v=player.querySelector('video');
-                                    var unstarted=player.classList.contains('unstarted-mode');
-                                    var earlyBuf=player.classList.contains('buffering-mode')&&v&&v.currentTime<1;
-                                    if(unstarted||earlyBuf){showSkipMsg(true,player);}else{showSkipMsg(false,player);}
-                                }else{showSkipMsg(false,player);}
-                                // Still handle any ads that slip through
                                 var adShowing=document.querySelector('.ad-showing,.ad-interrupting');
-                                if(!adShowing) return;
+                                if(!adShowing){showSkipMsg(false,player);return;}
+                                showSkipMsg(true,player);
                                 var skipBtn = player.querySelector('.ytp-ad-skip-button-slot button,button.ytp-ad-skip-button,button.ytp-ad-skip-button-modern,.ytp-skip-ad-button,[class*="skip-button"]');
                                 if(skipBtn && skipBtn.offsetParent !== null){ skipBtn.click(); return; }
                                 var btns = player.querySelectorAll('button');
@@ -575,8 +557,8 @@ impl TabManager {
                                         btns[i].click();return;
                                     }
                                 }
-                                var v2 = player.querySelector('video');
-                                if(v2){v2.muted=true;if(v2.duration>0)v2.currentTime=v2.duration;}
+                                var v = player.querySelector('video');
+                                if(v){v.muted=true;if(v.duration>0)v.currentTime=v.duration;}
                             }, 500);
                         })()"#;
                         let _ = webview.eval(adskip_fallback_js);

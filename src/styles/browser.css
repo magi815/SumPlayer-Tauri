@@ -372,6 +372,53 @@ html {
 }
 
 /* ── Toolbar Buttons ── */
+#btn-adblock {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 8px;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background 0.2s var(--ease-out), color 0.2s var(--ease-out);
+}
+
+#btn-adblock:hover {
+  background: var(--hover-bg);
+  color: var(--text-primary);
+}
+
+#btn-adblock.active {
+  color: var(--success);
+}
+
+#adblock-badge {
+  position: absolute;
+  top: 2px;
+  right: 1px;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  background: var(--success);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  line-height: 14px;
+  text-align: center;
+  border-radius: 7px;
+  pointer-events: none;
+}
+
+#adblock-badge.hidden {
+  display: none;
+}
+
 #btn-screenshot {
   display: flex;
   align-items: center;
