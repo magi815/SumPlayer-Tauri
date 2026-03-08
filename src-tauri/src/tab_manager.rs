@@ -529,14 +529,25 @@ impl TabManager {
                         let adskip_fallback_js = r#"(function(){
                             if(window.__sp_adskip_fallback) return;
                             window.__sp_adskip_fallback = true;
-                            function showSkipMsg(show){
+                            function showSkipMsg(show,player){
                                 var el=document.getElementById('__sp_skip_msg');
-                                if(show&&!el){
+                                if(show&&player&&!el){
+                                    player.style.position='relative';
                                     el=document.createElement('div');
                                     el.id='__sp_skip_msg';
-                                    el.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);z-index:2147483647;background:rgba(0,0,0,0.75);color:#fff;padding:14px 28px;border-radius:12px;font-size:15px;font-weight:600;font-family:-apple-system,BlinkMacSystemFont,sans-serif;pointer-events:none;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 4px 20px rgba(0,0,0,0.4);';
-                                    el.textContent='\u26A1 \uAD11\uACE0 \uC2A4\uD0B5\uC911...';
-                                    document.body.appendChild(el);
+                                    el.style.cssText='position:absolute;inset:0;z-index:999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.85);pointer-events:none;';
+                                    var wrap=document.createElement('div');
+                                    wrap.style.cssText='text-align:center;color:#fff;font-family:-apple-system,BlinkMacSystemFont,sans-serif;';
+                                    var icon=document.createElement('div');
+                                    icon.style.cssText='font-size:28px;margin-bottom:10px;';
+                                    icon.textContent='\u26A1';
+                                    var txt=document.createElement('div');
+                                    txt.style.cssText='font-size:15px;font-weight:600;letter-spacing:0.5px;';
+                                    txt.textContent='\uAD11\uACE0 \uC2A4\uD0B5\uC911...';
+                                    wrap.appendChild(icon);
+                                    wrap.appendChild(txt);
+                                    el.appendChild(wrap);
+                                    player.appendChild(el);
                                 } else if(!show&&el){
                                     el.remove();
                                 }
@@ -546,9 +557,9 @@ impl TabManager {
                                 var adShowing=document.querySelector('.ad-showing,.ad-interrupting');
                                 // Click skip buttons (only inside video player)
                                 var player = document.querySelector('.html5-video-player');
-                                if(!player){showSkipMsg(false);return;}
-                                if(!adShowing){showSkipMsg(false);return;}
-                                showSkipMsg(true);
+                                if(!player){showSkipMsg(false,null);return;}
+                                if(!adShowing){showSkipMsg(false,null);return;}
+                                showSkipMsg(true,player);
                                 var skipBtn = player.querySelector('.ytp-ad-skip-button-slot button,button.ytp-ad-skip-button,button.ytp-ad-skip-button-modern,.ytp-skip-ad-button,[class*="skip-button"]');
                                 if(skipBtn && skipBtn.offsetParent !== null){ skipBtn.click(); return; }
                                 var btns = player.querySelectorAll('button');
