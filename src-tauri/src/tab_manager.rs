@@ -466,9 +466,7 @@ impl TabManager {
                             window.__sp_shorts_auto = true;
 
                             function isShorts(){
-                                if(location.pathname.startsWith('/shorts/')) return true;
-                                if(document.querySelector('ytd-shorts,ytd-reel-video-renderer,#shorts-container')) return true;
-                                return false;
+                                return location.pathname.startsWith('/shorts/');
                             }
 
                             function updateBtn(btn, on){
@@ -513,10 +511,6 @@ impl TabManager {
                                 var onShorts = isShorts();
                                 var btn = ensureBtn();
                                 btn.style.display = onShorts ? 'block' : 'none';
-                                if(!onShorts && window.__sp_shorts_auto){
-                                    window.__sp_shorts_auto = false;
-                                    updateBtn(btn, false);
-                                }
                                 if(onShorts && window.__sp_shorts_auto){
                                     var videos = document.querySelectorAll('video');
                                     var video = null;

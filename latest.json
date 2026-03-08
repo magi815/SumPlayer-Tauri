@@ -1,10 +1,10 @@
 {
   "version": "1.0.19",
-  "notes": "Fix minimize/maximize buttons, fix popup dismissal, instant sponsor ad detection",
+  "notes": "Fix minimize/maximize, popup dismissal, instant sponsor detection, shorts auto-play",
   "pub_date": "2026-03-09T00:00:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZUFreStEbzlDSnN4azNhSk1BZUVzV1VvR2NKdzc3L21ocW1iVitVTkVQcjN6VlBFSjZoMlZyZGtmMkRBWWZnRUV6ZW5vbjhFaVFFVm93eXlxbXY1b2gwa05Pbkc0bEFVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzcyOTQ3MDM0CWZpbGU6U3VtUGxheWVyXzEuMC4xOV94NjQtc2V0dXAuZXhlCko2RWg4OHJCeU81YW03azk0clJrL2tFZUYwTzEvV0ZOVk96VSs2V0NvZ3lKendJcElLOUtMZzVSVk83cDBpR1JJaXRaVGNtTHMyNzZuLytkNWo5R0NBPT0K",
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZUFreStEbzlDSmpEQzhJb3pIcGdOc3YrSHlvbVBkTnFQakFyQmdsRm5lZ29mVEJFMTliQW9mQ1puTWJxR3dSdWU5QjJoaTJhZndpcXA3Q2ZkU1NkcDZ0eTVlUDhQOXdvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzcyOTQ4MTgzCWZpbGU6U3VtUGxheWVyXzEuMC4xOV94NjQtc2V0dXAuZXhlCmtrMElpakRJTWs5cXpoZG84eVdnS1RtT2RVSWZDWW0vK2M4Q000NVkxbndOQllGNjRaaVg3dlZyNGl2TkN3UmdxS2ZsM2lMQVkrSVB5YXhpcUxCZkNBPT0K",
       "url": "https://github.com/magi815/SumPlayer-Tauri/releases/download/v1.0.19/SumPlayer_1.0.19_x64-setup.exe"
     }
   }
