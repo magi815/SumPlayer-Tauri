@@ -1,11 +1,11 @@
 {
-  "version": "1.0.23",
-  "notes": "Ad block counter badge, fix Premium infinite loading, fix bookmark drag",
+  "version": "1.0.24",
+  "notes": "Tab session restore on app restart",
   "pub_date": "2026-03-09T00:00:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZUFreStEbzlDSnM5NjNFS01rTkdlUWNFMVE2VmIraHZVcFZURmNGTEsyT0d3azlCREtScFhZN1YxYWljSFhRcXNPUCt4dWVybEFtditESVNiYmpRQm1rOEJyb1FwVWdjPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzcyOTU2NzM1CWZpbGU6U3VtUGxheWVyXzEuMC4yM194NjQtc2V0dXAuZXhlCnpnY0ZvUUZpYitoazV0REl0RlNHc1FvaTQzZkNGeWtHYkFBeFpvUlFtZ1dnZFlXMXhkQUh6ZlFyWXNPenhZVWpLZEVkWkFHOFI0aTJHS29jalJMdUFBPT0K",
-      "url": "https://github.com/magi815/SumPlayer-Tauri/releases/download/v1.0.23/SumPlayer_1.0.23_x64-setup.exe"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZUFreStEbzlDSnZOb3hyeVFUUThybmordGZ3OTlab0pJNFJ2UGVwNGwyU0hpcTZQemRHV3hxTjRnSG85b1Q1SHZ4V0hOeWFjcVNiQ2hVVFhqbElWZHorUUVpR3VJb3c0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczMDQ4MDcxCWZpbGU6U3VtUGxheWVyXzEuMC4yNF94NjQtc2V0dXAuZXhlClpmRjBaRUdxamg5ckZZekFjYnhvT3RabERVV2JNUGo2ZUdjTVBSS2NHSzV4OW5tM3VuN0Q4YmJSdGRjYUlLcE9HVy8vVGpQc0hzNGFpZWxNNHpjNEFBPT0K",
+      "url": "https://github.com/magi815/SumPlayer-Tauri/releases/download/v1.0.24/SumPlayer_1.0.24_x64-setup.exe"
     }
   }
 }

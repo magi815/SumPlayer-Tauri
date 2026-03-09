@@ -51,6 +51,40 @@ impl TabManager {
         }
     }
 
+    pub fn save_session(&self) {
+        let session_tabs: Vec<serde_json::Value> = self.tabs.iter().map(|t| {
+            serde_json::json!({
+                "url": t.url,
+                "title": t.title,
+                "pinned": t.pinned,
+            })
+        }).collect();
+        let active_index = self.active_tab_id
+            .and_then(|aid| self.tabs.iter().position(|t| t.id == aid))
+            .unwrap_or(0);
+        let data = serde_json::json!({
+            "tabs": session_tabs,
+            "active_index": active_index,
+        });
+        let path = self.data_dir.join("session.json");
+        let _ = std::fs::write(&path, serde_json::to_string_pretty(&data).unwrap_or_default());
+    }
+
+    pub fn load_session(&self) -> Option<serde_json::Value> {
+        let path = self.data_dir.join("session.json");
+        if let Ok(data) = std::fs::read_to_string(&path) {
+            if let Ok(session) = serde_json::from_str::<serde_json::Value>(&data) {
+                let tabs = session.get("tabs").and_then(|t| t.as_array());
+                if let Some(tabs) = tabs {
+                    if !tabs.is_empty() {
+                        return Some(session);
+                    }
+                }
+            }
+        }
+        None
+    }
+
     fn load_home_page(data_dir: &PathBuf) -> String {
         let path = data_dir.join("settings.json");
         if let Ok(data) = std::fs::read_to_string(&path) {

@@ -44,6 +44,39 @@ async fn tab_create(
 }
 
 #[tauri::command]
+async fn session_restore(
+    app: tauri::AppHandle,
+    state: tauri::State<'_, AppState>,
+) -> Result<serde_json::Value, String> {
+    let session = {
+        let tm = state.tab_manager.lock().await;
+        tm.load_session()
+    };
+    if let Some(session) = session {
+        let tabs = session.get("tabs").and_then(|t| t.as_array()).cloned().unwrap_or_default();
+        let active_index = session.get("active_index").and_then(|v| v.as_u64()).unwrap_or(0) as usize;
+        let mut created_ids = Vec::new();
+        for tab in &tabs {
+            let url = tab.get("url").and_then(|v| v.as_str()).unwrap_or("").to_string();
+            if url.is_empty() { continue; }
+            let mut tm = state.tab_manager.lock().await;
+            if let Ok(id) = tm.create_tab(&app, Some(url)).await {
+                created_ids.push(id);
+            }
+        }
+        // Switch to the previously active tab
+        if !created_ids.is_empty() {
+            let target_id = created_ids.get(active_index).copied().unwrap_or(created_ids[0]);
+            let mut tm = state.tab_manager.lock().await;
+            tm.switch_tab(&app, target_id);
+        }
+        Ok(serde_json::json!({ "restored": true, "count": created_ids.len() }))
+    } else {
+        Ok(serde_json::json!({ "restored": false }))
+    }
+}
+
+#[tauri::command]
 async fn tab_close(
     app: tauri::AppHandle,
     state: tauri::State<'_, AppState>,
@@ -418,6 +451,9 @@ async fn window_close(app: tauri::AppHandle, state: tauri::State<'_, AppState>) 
             }
         }
         drop(wsm);
+        let tm = state.tab_manager.lock().await;
+        tm.save_session();
+        drop(tm);
         let hm = state.history_manager.lock().await;
         hm.flush_save();
         drop(hm);
@@ -903,6 +939,7 @@ fn main() {
         .invoke_handler(tauri::generate_handler![
             // Tabs
             tab_create,
+            session_restore,
             tab_close,
             tab_switch,
             tab_list,
@@ -1193,6 +1230,10 @@ fn main() {
                     }
                 }
                 drop(wsm);
+                // Save tab session
+                let tm = state.tab_manager.blocking_lock();
+                tm.save_session();
+                drop(tm);
                 // Flush history
                 let hm = state.history_manager.blocking_lock();
                 hm.flush_save();
